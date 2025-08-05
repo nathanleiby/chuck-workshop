@@ -65,6 +65,11 @@
 
 ChuGL
 
+structure:
+- initialization
+- data
+- runtime
+
 
 ---
 
