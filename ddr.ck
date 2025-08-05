@@ -1,13 +1,21 @@
 public class Note
 {
     // pre-constructor
+    // DATA
     dur _ttl;
     0::second => dur _age;
     int _noteType;
 
-    // TODO: Why would i see a static shape that sits in middle?
+    // VISUAL
+    // TODO: Why do I see a 2nd static shape that sits in middle?
     GTorus shape --> GG.scene();
-    shape.sca(0.2);
+    0.2 => float MAX_SCA;
+    shape.sca(MAX_SCA);
+
+    // SOUND
+    TriOsc tri => dac;
+    tri.gain(0.);
+    [60, 62, 64, 65] @=> int midiNotes[];
 
     fun @construct(dur ttl, int noteType)
     {
@@ -27,6 +35,23 @@ public class Note
             <<< "Invalid note type: " + noteType >>>;
             me.exit();
         }
+
+        spork ~ playNote(ttl, 0.5, noteType);
+    }
+
+    // play sound at a scheduled time (when), lasting for a certain length (beats)
+    fun void playNote(dur when, float beats, int noteType) {
+        tri.gain(0.);
+        when => now;
+        tri.gain(5.);
+        // TODO: is random2 inclusive of RHS?
+        // TODO: can we assert? e.g. 0 <= noteType <= 3
+        midiNotes[noteType] => int freq;
+        Std.mtof(freq) => tri.freq; // frequency
+
+        // TODO: beats * BEAT_DUR // BEAT_DUR isn't local
+        beats * 0.25::second => now;
+        tri.gain(0.);
     }
 
     public void update(float dt) {
@@ -38,8 +63,27 @@ public class Note
             // trigger expiry (explosion/fade)
         }
 
+        if (newAge > _ttl) {
+            2::second => dur fadeOutDur;
+            newAge - _ttl => dur secondsPastExpiry;
+
+            secondsPastExpiry / fadeOutDur => float howFaded;
+            Math.min(1, howFaded) => howFaded;
+
+            if (newAge > _ttl) {
+                // Math.max(1::second, 0::second) => dur fadeOut;
+                // fully expire
+                shape.sca(MAX_SCA * (1. - howFaded));
+            }
+        }
+
         newAge => _age;
-        shape.pos(-1. * ((_ttl - _age)/second), 0, 0);
+
+        -1. * ((_ttl - _age)/second) => float x;
+        -1. * ((_ttl - _age)/second) => float y;
+        shape.pos(x, y, 0);
+
+
 
     }
 }
@@ -47,14 +91,15 @@ public class Note
 120. => float BPM;
 1::minute / BPM => dur BEAT_DUR;
 
-4 => int NOTE_COUNT;
-4 => int COUNTDOWN;
+16 => int NOTE_COUNT;
+2 => int COUNTDOWN;
 
 Note notes[NOTE_COUNT];
 
 fun init() {
     for (int i; i < NOTE_COUNT; i++) {
-        new Note((i+COUNTDOWN)::BEAT_DUR, i % 3) @=> notes[i];
+        Math.random2(0, 3) => int noteType;
+        new Note((i+COUNTDOWN)::BEAT_DUR, noteType) @=> notes[i];
     }
 }
 
@@ -78,6 +123,7 @@ fun void handleKeyboardInput() {
     }
 }
 
+
 fun update(float dt) {
     for ( Note n : notes) {
         n.update(dt);
@@ -88,11 +134,11 @@ fun update(float dt) {
 init();
 
 GText text --> GG.scene();
-text.pos(0, -1, 0);
-text.sca(0.5);
+text.pos(1.5, -1.5, 0);
+text.sca(0.3);
 
 GText bpmText --> GG.scene();
-bpmText.pos(1, 1, 0);
+bpmText.pos(1.5, 1.5, 0);
 bpmText.sca(0.25);
 bpmText.text("BPM: " + BPM);
 
