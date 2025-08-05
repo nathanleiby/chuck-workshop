@@ -1,6 +1,7 @@
 - DDR clone ("ddork"?)
 	- audio, moving arrows sync with audio, keypress timing capture and scoring
 	- then, go from 2d to 3d -- e..g use the Suzanne monkey head as an arrow
+- orbits - 3d bodies orbiting but various polythyhms
 - Space Invaders clone -- tempo increases
 - Godot connector
 	- Allow embedding Chuck within a Godot game --
@@ -20,5 +21,7 @@
   - modulated by its config
   - modulated by its state
   - Q: can you inspect the audio graph and/or scene graph?
-- orbits - 3d bodies orbiting but various polythyhms
 
+
+crazy -- can i press "r" to reresh or simmilar? havea central shreduler and then spawn parts?
+what about with file imports?
