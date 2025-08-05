@@ -32,6 +32,8 @@ while( true )
     // get one or more messages
     while( hi.recv( msg ) )
     {
+        <<< msg >>>;
+
         // check for action type
         if( msg.isButtonDown() )
         {

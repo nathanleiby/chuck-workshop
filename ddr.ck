@@ -1,35 +1,67 @@
-
-
-// Scene Setup =======================================================
-GOrbitCamera cam --> GG.scene();
-GG.scene().camera(cam);
-
 GText text --> GG.scene();
-text.sca(.1);
+text.pos(0, -1, 0);
+text.sca(0.5);
 
-UI_String text_input(text.text());
+// public class Note
+// {
+//     1::second => dur ttl;
+//     0::second => dur age;
 
-UI_Int font_index;
-[
-    "chugl:cousine-regular",
-    "chugl:karla-regular",
-    "chugl:proggy-tiny",
-    "chugl:proggy-clean",
-] @=> string builtin_fonts[];
+//     public void setTtl( dur d)
+//     { d => ttl; }
 
-UI_Float4 text_color;
-@(1, 1, 1, 1) => text_color.val;
+//     public void addAge(dur d)
+//     { age + d => age; }
+// }
 
-[0.5, 0.5] @=> float control_points[];
+// Note notes[10];
 
-UI_Float line_spacing(1.0);
-UI_Float text_scale(text.sca().x);
-UI_Bool text_rotate;
-UI_Float antialias(text.antialias());
+fun spawnNote(dur arrivalTime, int noteType)  {
+    GTorus note --> GG.scene();
+    note.sca(0.2);
+    note.pos(-1. * (arrivalTime/second), 0, 0);
+
+    if (noteType == 0) {
+
+    } else if (noteType == 1) {
+        note.color(Color.RED);
+    } else if (noteType == 2) {
+            note.color(Color.GREEN);
+    } else if (noteType == 3) {
+        note.color(Color.BLUE);
+    } else {
+        <<< "Invalid note type: " + noteType >>>;
+        me.exit();
+    }
+
+}
+
+for (int i; i < 10; i++) {
+    spawnNote(i::second, i % 3 );
+    // new Note();
+}
 
 // main loop
 while (true)
 {
+    // Keyboard input
+    // check if Q is pressed
+    if (GWindow.keyDown(GWindow.Key_Q)) {
+        <<< "user pressed 'q'... quitting" >>>;
+        me.exit();
+    }
+
+    // Check if arrows pressed
+    if (GWindow.keyDown(GWindow.Key_Up)) {
+        <<< "user pressed 'up'" >>>;
+    } else if (GWindow.keyDown(GWindow.Key_Down)) {
+        <<< "user pressed 'down'" >>>;
+    } else if (GWindow.keyDown(GWindow.Key_Left)) {
+        <<< "user pressed 'left'" >>>;
+    } else if (GWindow.keyDown(GWindow.Key_Right)) {
+        <<< "user pressed 'right'" >>>;
+    }
+
     GG.nextFrame() => now;
-    text.text(<< GG.fc() >>);
+    text.text("Frame: " + GG.fc());
 }
