@@ -8,7 +8,6 @@ cam.pos(0, 0, 10);
 //   - [x] add a kick drum loop
 // - [x] make notes arrive from 4 angles
 
-
 public class Note
 {
     // pre-constructor

@@ -1,6 +1,11 @@
 - DDR clone ("ddork"?)
 	- audio, moving arrows sync with audio, keypress timing capture and scoring
 	- then, go from 2d to 3d -- e..g use the Suzanne monkey head as an arrow
+- "DDR" viz variation -- read in midi to seed the sounds
+  - how to play a midi file in Chuck?
+  - use midi to get timings, but assign to random sounds?
+  - assign to proper sounds
+  - visualize noteIdx in a circular manner
 - orbits - 3d bodies orbiting but various polythyhms
 - Space Invaders clone -- tempo increases
 - Godot connector
@@ -21,7 +26,7 @@
   - modulated by its config
   - modulated by its state
   - Q: can you inspect the audio graph and/or scene graph?
-
+- Jacquard Loom explainer / viz?
 
 crazy -- can i press "r" to reresh or simmilar? havea central shreduler and then spawn parts?
 what about with file imports?
