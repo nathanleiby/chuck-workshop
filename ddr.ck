@@ -38,8 +38,14 @@ public class Note
             shape.color(Color.GREEN);
         } else if (noteType == 3) {
             shape.color(Color.BLUE);
-        }  else if (noteType == 4) {
+        } else if (noteType == 4) {
             shape.color(Color.PURPLE);
+        }  else if (noteType == 5) {
+            shape.color(Color.ORANGE);
+        } else if (noteType == 6) {
+            shape.color(Color.random()); // TODO
+        } else if (noteType == 7) {
+            shape.color(Color.random()); // TODO
         } else {
             <<< "Invalid note type: " + noteType >>>;
             me.exit();
@@ -75,17 +81,30 @@ public class Note
                 <<< "playing kick drum" >>>;
                 buf.read(dataPath + "kick.wav");
                 buf.pos(0);
-                // 1::second => now;
                 buf.length() => now;
-            } else {
+            }  else if (noteType == 5) {
+                // play snare
+                <<< "playing snare" >>>;
+                buf.read(dataPath + "snare.wav");
+                buf.pos(0);
+                buf.length() => now;
+            } else if (noteType == 6) {
+                // play hihat
+                <<< "playing hihat-open" >>>;
+                buf.read(dataPath + "hihat-open.wav");
+                buf.pos(0);
+                buf.length() => now;
+            } else if (noteType == 7) {
+                // play crash
+                <<< "playing crash" >>>;
+                buf.read(dataPath + "snare-hop.wav");
+                buf.pos(0);
+                buf.length() => now;
+            }
+            else {
                 <<< "Invalid note type: " + noteType >>>;
                 me.exit();
             }
-            // "hihat-open.wav"
-            // "hihat.wav"
-            // "snare-chili.wav"
-            // "snare-hop.wav"
-            // "snare.wav"
         }
     }
 
@@ -128,6 +147,12 @@ public class Note
         } else if (_noteType == 4) {
             // diagonal
             shape.pos(-1 * offset, -1 * offset, 0);
+        } else if (_noteType == 5) {
+            shape.pos(-1 * offset, 1 * offset, 0);
+        } else if (_noteType == 6) {
+            shape.pos(1 * offset, -1 * offset, 0);
+        } else if (_noteType == 7) {
+            shape.pos(1 * offset, 1 * offset, 0);
         } else {
             <<< "Invalid note type: " + _noteType >>>;
             me.exit();
@@ -138,26 +163,53 @@ public class Note
     }
 }
 
-120. => float BPM;
+80. => float BPM;
 1::minute / BPM => dur BEAT_DUR;
 
 16 => int NOTE_COUNT;
-16 => int RHYTHM_NOTE_COUNT;
+16 => int KICK_DRUM_COUNT;
+8 => int SNARE_COUNT;
+2 => int CRASH_COUNT;
+4 => int OTHER_COUNT;
 
 2 => int COUNTDOWN;
 
-Note notes[NOTE_COUNT + RHYTHM_NOTE_COUNT];
+Note notes[NOTE_COUNT + KICK_DRUM_COUNT + SNARE_COUNT + CRASH_COUNT + OTHER_COUNT];
 
 fun init() {
+    0 => int totalNotes;
     for (int i; i < NOTE_COUNT; i++) {
         Math.random2(0, 3) => int noteType;
         new Note((i+COUNTDOWN)::BEAT_DUR, noteType) @=> notes[i];
     }
+    totalNotes + NOTE_COUNT => totalNotes;
 
-    // schedule the "beat"
-    for (int i; i < RHYTHM_NOTE_COUNT; i++) {
-        new Note((i+COUNTDOWN)::BEAT_DUR,4) @=> notes[NOTE_COUNT + i];
+    // schedule the kick
+    for (int i; i < KICK_DRUM_COUNT; i++) {
+        new Note((i+COUNTDOWN)::BEAT_DUR,4) @=> notes[totalNotes + i];
     }
+    totalNotes + KICK_DRUM_COUNT => totalNotes;
+
+    // schedule the snares
+    for (int i; i < SNARE_COUNT; i++) {
+        new Note(((i*2 + 1)+COUNTDOWN)::BEAT_DUR,5) @=> notes[totalNotes+ i];
+    }
+    totalNotes + SNARE_COUNT => totalNotes;
+
+    // schedule the crashes
+    for (int i; i < CRASH_COUNT; i++) {
+        new Note(((i* (NOTE_COUNT / CRASH_COUNT))+COUNTDOWN)::BEAT_DUR,6) @=> notes[totalNotes + i];
+    }
+    totalNotes + CRASH_COUNT => totalNotes;
+
+    // schedule the other thing
+    3 => int otherOffset;
+    for (int i; i < OTHER_COUNT; i++) {
+        new Note(((i* (NOTE_COUNT / OTHER_COUNT) + otherOffset)+COUNTDOWN)::BEAT_DUR,7) @=> notes[totalNotes + i];
+    }
+    totalNotes + OTHER_COUNT => totalNotes;
+
+    <<< "Total notes scheduled: " + totalNotes >>>;
 }
 
 fun void handleKeyboardInput() {
