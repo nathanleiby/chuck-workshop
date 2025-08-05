@@ -5,6 +5,7 @@
 
 // GTorus suzanne --> GG.scene();
 GSuzanne suzanne --> GG.scene();
+GSuzanne suzanne2 --> GG.scene();
 
 // Event e;
 // 1::second => now; // wait 1 second
@@ -35,6 +36,27 @@ fun void doAudio() {
 
 spork ~ doAudio();
 
+
+fun void sayDoh() {
+    // load "doh" sample
+    SndBuf buf => dac;
+    buf.gain(0.5);
+    buf.read("special:dope");
+
+    while (true)
+    {
+        0 => buf.pos;
+        suzanne2.color(Color.RED);
+        buf.length() => now;
+        suzanne2.color(Color.WHITE);
+
+        1::second => now;
+    }
+}
+
+spork ~ sayDoh();
+
+
 // time loop
 while( true )
 {
@@ -61,6 +83,10 @@ while( true )
     dt => float theta;
     suzanne.rotateY(2 * theta);
 
+    Math.fabs(Math.sin(now/second )) / 2. => float gain;
+    gain => tri.gain; // set gain
+
+
     // audiovisual mapping
     // NOTE: This block here is the CORE of what makes ChuGL interesting! real time synthesis and graphics that are deeply connected in code.
     Math.remap(
@@ -69,10 +95,17 @@ while( true )
         -2, 2 // to this range
     ) => suzanne.posY; // set the Y position
 
+    Math.remap(
+        tri.gain(),
+        0, 1, // from this range
+        -2, 2 // to this range
+    ) => suzanne.posZ;
+
     // suzanne.rotateY(dt * 10);
 
     // <<< GG.fc() >>>;
 }
+
 
 // Right handed coordinate system
 // - Thumb is X
