@@ -1,3 +1,8 @@
+GOrbitCamera cam --> GG.scene();
+GG.scene().camera(cam);
+cam.pos(0, 0, 10);
+
+
 // TODOs
 // - Get better sounds!
 //   - [x] add a kick drum loop
@@ -30,28 +35,34 @@ public class Note
         ttl => _ttl;
         noteType => _noteType;
 
-        if (noteType == 0) {
-            shape.color(Color.YELLOW);
-        } else if (noteType == 1) {
-            shape.color(Color.RED);
-        } else if (noteType == 2) {
-            shape.color(Color.GREEN);
-        } else if (noteType == 3) {
-            shape.color(Color.BLUE);
-        } else if (noteType == 4) {
-            shape.color(Color.PURPLE);
-        }  else if (noteType == 5) {
-            shape.color(Color.ORANGE);
-        } else if (noteType == 6) {
-            shape.color(Color.random()); // TODO
-        } else if (noteType == 7) {
-            shape.color(Color.random()); // TODO
-        } else {
-            <<< "Invalid note type: " + noteType >>>;
-            me.exit();
-        }
+        shape.color(_noteColor(_noteType));
 
         spork ~ playNote(ttl, 0.5, noteType);
+    }
+
+    fun vec3 _noteColor(int noteType) {
+        if (noteType == 0) {
+            return Color.YELLOW;
+        } else if (noteType == 1) {
+            return Color.RED;
+        } else if (noteType == 2) {
+            return Color.GREEN;
+        } else if (noteType == 3) {
+            return Color.BLUE;
+        } else if (noteType == 4) {
+            return Color.PURPLE;
+        }  else if (noteType == 5) {
+            return Color.ORANGE;
+        } else if (noteType == 6) {
+            return Color.BLACK;
+        } else if (noteType == 7) {
+            return Color.WHITE;
+        } else {
+            return Color.random();
+            // TODO: aseert? throw?
+            // <<< "Invalid note type: " + noteType >>>;
+            // me.exit();
+        }
     }
 
     // play sound at a scheduled time (when), lasting for a certain length (beats)
@@ -128,6 +139,7 @@ public class Note
                 // Math.max(1::second, 0::second) => dur fadeOut;
                 // fully expire
                 shape.sca(MAX_SCA * (1. - howFaded));
+                shape.color(_noteColor(_noteType) * (1. - howFaded));
             }
         }
 
@@ -243,14 +255,18 @@ fun update(float dt) {
 // MAIN
 init();
 
+0 => int showText; // TODO: bool exists?
 GText text --> GG.scene();
-text.pos(1.5, -1.5, 0);
-text.sca(0.3);
+text.text("");
+if (showText) {
+    text.pos(1.5, -1.5, 0);
+    text.sca(0.3);
 
-GText bpmText --> GG.scene();
-bpmText.pos(1.5, 1.5, 0);
-bpmText.sca(0.25);
-bpmText.text("BPM: " + BPM);
+    GText bpmText --> GG.scene();
+    bpmText.pos(1.5, 1.5, 0);
+    bpmText.sca(0.25);
+    bpmText.text("BPM: " + BPM);
+}
 
 
 // main loop
@@ -264,6 +280,7 @@ while (true)
     // updates
     update(GG.dt());
 
-
-    text.text("Frame: " + GG.fc());
+    if (showText) {
+        text.text("Frame: " + GG.fc());
+    }
 }
