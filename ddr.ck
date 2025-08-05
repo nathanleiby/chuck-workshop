@@ -1,3 +1,7 @@
+// TODOs
+// - Get better sounds!
+// - [x] make notes arrive from 4 angles
+
 public class Note
 {
     // pre-constructor
@@ -79,9 +83,21 @@ public class Note
 
         newAge => _age;
 
-        -1. * ((_ttl - _age)/second) => float x;
-        -1. * ((_ttl - _age)/second) => float y;
-        shape.pos(x, y, 0);
+        // Given 0-3 note types
+        // make them start motion from up, right, left, down
+        ((_ttl - _age)/second) => float offset;
+        if (_noteType == 0) {
+            shape.pos(0, 1 *offset, 0);
+        } else if (_noteType == 1) {
+            shape.pos(1 * offset, 0, 0);
+        } else if (_noteType == 2) {
+            shape.pos(0, -1 * offset, 0);
+        } else if (_noteType == 3) {
+            shape.pos(-1 * offset, 0, 0);
+        }
+        // -1. * ((_ttl - _age)/second) => float x;
+        // -1. * ((_ttl - _age)/second) => float y;
+        // shape.pos(x, y, 0);
 
 
 

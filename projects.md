@@ -25,3 +25,10 @@
 
 crazy -- can i press "r" to reresh or simmilar? havea central shreduler and then spawn parts?
 what about with file imports?
+
+// TODO: could we get autocomplete?!
+
+// chuck ex1.ck
+// ex1.ck:16:2: syntax error
+// [16] 1s => now
+      // ^
