@@ -1,6 +1,8 @@
 // TODOs
 // - Get better sounds!
+//   - [x] add a kick drum loop
 // - [x] make notes arrive from 4 angles
+
 
 public class Note
 {
@@ -12,6 +14,7 @@ public class Note
 
     // VISUAL
     // TODO: Why do I see a 2nd static shape that sits in middle?
+    // TODO: vary the shape based on note type or beat
     GTorus shape --> GG.scene();
     0.2 => float MAX_SCA;
     shape.sca(MAX_SCA);
@@ -35,6 +38,8 @@ public class Note
             shape.color(Color.GREEN);
         } else if (noteType == 3) {
             shape.color(Color.BLUE);
+        }  else if (noteType == 4) {
+            shape.color(Color.PURPLE);
         } else {
             <<< "Invalid note type: " + noteType >>>;
             me.exit();
@@ -45,17 +50,43 @@ public class Note
 
     // play sound at a scheduled time (when), lasting for a certain length (beats)
     fun void playNote(dur when, float beats, int noteType) {
-        tri.gain(0.);
-        when => now;
-        tri.gain(5.);
-        // TODO: is random2 inclusive of RHS?
-        // TODO: can we assert? e.g. 0 <= noteType <= 3
-        midiNotes[noteType] => int freq;
-        Std.mtof(freq) => tri.freq; // frequency
 
-        // TODO: beats * BEAT_DUR // BEAT_DUR isn't local
-        beats * 0.25::second => now;
-        tri.gain(0.);
+        if (noteType < 4) {
+            tri.gain(0.);
+            when => now;
+            tri.gain(.2);
+            // TODO: is random2 inclusive of RHS?
+            // TODO: can we assert? e.g. 0 <= noteType <= 3
+            midiNotes[noteType] => int freq;
+            Std.mtof(freq) => tri.freq; // frequency
+
+            // TODO: beats * BEAT_DUR // BEAT_DUR isn't local
+            beats * 0.25::second => now;
+            tri.gain(0.);
+        } else {
+            // load the sample
+            "/Applications/miniAudicle.app/Contents/Resources/examples/data/" => string dataPath;
+
+            SndBuf buf => Gain g => dac;
+            .5 => g.gain;
+
+            when => now;
+            if (noteType == 4) {
+                <<< "playing kick drum" >>>;
+                buf.read(dataPath + "kick.wav");
+                buf.pos(0);
+                // 1::second => now;
+                buf.length() => now;
+            } else {
+                <<< "Invalid note type: " + noteType >>>;
+                me.exit();
+            }
+            // "hihat-open.wav"
+            // "hihat.wav"
+            // "snare-chili.wav"
+            // "snare-hop.wav"
+            // "snare.wav"
+        }
     }
 
     public void update(float dt) {
@@ -94,13 +125,16 @@ public class Note
             shape.pos(0, -1 * offset, 0);
         } else if (_noteType == 3) {
             shape.pos(-1 * offset, 0, 0);
+        } else if (_noteType == 4) {
+            // diagonal
+            shape.pos(-1 * offset, -1 * offset, 0);
+        } else {
+            <<< "Invalid note type: " + _noteType >>>;
+            me.exit();
         }
         // -1. * ((_ttl - _age)/second) => float x;
         // -1. * ((_ttl - _age)/second) => float y;
         // shape.pos(x, y, 0);
-
-
-
     }
 }
 
@@ -108,14 +142,21 @@ public class Note
 1::minute / BPM => dur BEAT_DUR;
 
 16 => int NOTE_COUNT;
+16 => int RHYTHM_NOTE_COUNT;
+
 2 => int COUNTDOWN;
 
-Note notes[NOTE_COUNT];
+Note notes[NOTE_COUNT + RHYTHM_NOTE_COUNT];
 
 fun init() {
     for (int i; i < NOTE_COUNT; i++) {
         Math.random2(0, 3) => int noteType;
         new Note((i+COUNTDOWN)::BEAT_DUR, noteType) @=> notes[i];
+    }
+
+    // schedule the "beat"
+    for (int i; i < RHYTHM_NOTE_COUNT; i++) {
+        new Note((i+COUNTDOWN)::BEAT_DUR,4) @=> notes[NOTE_COUNT + i];
     }
 }
 
@@ -145,6 +186,7 @@ fun update(float dt) {
         n.update(dt);
     }
 }
+
 
 // MAIN
 init();
