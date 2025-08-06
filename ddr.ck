@@ -224,7 +224,7 @@ fun init() {
 }
 
 fun void handleKeyboardInput() {
-        // Keyboard input
+    // Keyboard input
     // check if Q is pressed
     if (GWindow.keyDown(GWindow.Key_Q)) {
         <<< "user pressed 'q'... quitting" >>>;

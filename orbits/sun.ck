@@ -1,7 +1,7 @@
 SphereGeometry sphere_geo;
 FlatMaterial mat3;
 
-mat3.color(Color.YELLOW);
+mat3.color(2. * Color.YELLOW);
 
 GMesh sphere(sphere_geo, mat3) --> GG.scene();
 
@@ -14,6 +14,8 @@ bloom_pass.input(GG.renderPass().colorOutput());
 output_pass.input(bloom_pass.colorOutput());
 output_pass.tonemap(4); // 4 is "ACES"
 
+// Only ultra bright objects get blooom
+bloom_pass.threshold(1.1);
 
 while (true) {
     GG.nextFrame() => now;
