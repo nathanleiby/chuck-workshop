@@ -6,10 +6,10 @@ Draw a planet
 Draw the planet's orbit
 Play a sound every time the planet arrives at its start location
 
-
 ## Questions
 
-- [ ] How do I add bloom to objects
+- [x] How do I add bloom to objects
 - [ ] How do I put a texture on an orb?
-- [ ] Any tips on creating a "space" like effect? (e.g. )
-- [ ] What are some
+  - we did 2d texture so probably good enough for now
+- [ ] Any tips on creating a "space" like effect? (e.g. shaders, particles)
+

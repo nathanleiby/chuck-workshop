@@ -21,6 +21,7 @@
 
 ## RANDOM
 
+- could we use the snowstorm particle effect to give the sense of space off stars far away?
 - Could you choose a central object for orbital speeds? "gravity" + music
 - "moondulator" -- use moons to modulate planet behavior?
   - rings -- saturn style rings as another planet modulator?
