@@ -1,0 +1,79 @@
+# orbits
+
+## Design
+
+- UI
+    - 2d: https://space-facts.com/planet-orbits/
+    - later: 3d seems nice for excellent camera and lightin
+- Audio
+    - Polyrhythm aligned with orbit cycle of the planet
+      - noise every time it..
+        - does a full cycle?
+        - or at various 'notches' along the loop?
+        - diff planets are "every 1, every 2, every 4, every 8"  .. maybe this is part of the randomness? or you can adjust the "intensity" of a planet
+      - visual correspondence .. a planet should activate somehow when it creates sound
+- "feel"
+  - goal: creative exploration
+  - soaring, sense of scope and grandiosity
+  - sense of emptiness being filled with creation
+  - divine clockmaker
+  - zoom in and out? from small to really expansive solar system -> galaxy -> universe sounds amazing!
+
+## RANDOM
+
+- Could you choose a central object for orbital speeds? "gravity" + music
+- "moondulator" -- use moons to modulate planet behavior?
+  - rings -- saturn style rings as another planet modulator?
+- planets
+  - of different colors
+  - of different types (gas giant, exoplanet, etc)
+- should we associate actual gravity equations with cycles
+- "chord nebulas" -
+  - color of a region donates color of sound
+- "clock" of the galaxy
+- viewpoints:
+  - universe (start with different abstract "space" noise in the background as a base palette?)
+  - galaxy (full sequencer loop)
+  - solar system (one instrument loop)
+    - the "nth" orbit/ring denotes "N notes per loop" measure of the sequence
+  - planet -- one rhythm / sequence
+    - could it zoom in more? cyclical activity on a planet? (day / night cycle?)
+  - moon (modulator on a planet)
+- if possible, allow saving/load a universe (autosave?), since it's a lot of work to build!
+- planets:
+  - rotate
+  - tilt
+  - day night
+- something exciting when it all the polyrhythms align? "syzygy" moment
+- it'd be cool if you could click the "viewpoint" and move to it.
+  - e.g. click a sun (or its orbit) to zoom into that solar system
+- [elliptical orbits](https://astronomy.stackexchange.com/questions/1979/why-are-most-planetary-orbits-nearly-circular)
+- polyrhythm tier list https://youtu.be/gEkYwxRcyIk?si=XSPqXWNFS5ex8XGO
+- audio vibe ideas:
+  - (chillhop / triphop) "You Wish" - by Nightmares on Wax
+  - "Teardrop" - Massive Attack
+- "storyteller" - magic camera controller that zooms in on relatively active / interesting part of simulation
+  - e.g. maybe it's the loud drum, but perhaps it's a newly added element, even if less loud
+  - could it apply a filter/lens to the overall view? e.g. based on verse, chorus, bridge
+  - after building your composition, this let's you step back and enjoy it!
+- accidental fun -- pulsing ring from center..
+  - https://discord.com/channels/1397694268885434489/1397695667949797386/1402687594269245542
+  - huge tick radius -- see screenshot
+- interaction:
+  - how does the user choose to add/remove planets?
+  - how does the user toggle sounds/sfx
+    - ex: left click -- create or delete
+    - ex: right click -- modulate sound
+- crazy idea-- allow "undo" in case you delete mistakenly!!
+- visual variety, visual interest:
+  - orbit angles
+- for each component type, consider variants
+  - sun types:
+    - binary star (whoa could the sun itself have a rhythm due to that?)
+      - in general, objects co-orbiting sounds interesting! [example](https://sites.ualberta.ca/~pogosyan/teaching/ASTRO_122/lect13/lecture13.html)
+    - white dwarf
+    - supergiant
+- how to show the orbit?
+  - consider showing orbit as a trail, vs full solid circle
+  - or variants: lighter/dotted/dash-dotted/etc
+
