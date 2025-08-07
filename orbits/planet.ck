@@ -1,6 +1,4 @@
 // Start position and orbit circle
-
-
 GGen galaxy --> GG.scene();
 
 // fun initScene() {
@@ -216,12 +214,11 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
     (step - now % step) => now;
     <<< "wait a little? (after)  =", now >>>;
 
-    osc => dac;
-    osc2 => dac;
-    osc3 => dac;
-    osc.gain(0.);
-    osc2.gain(0.);
-    osc3.gain(0.);
+    Gain g;
+    osc => g => dac;
+    osc2 => g => dac;
+    osc3 => g => dac;
+    g.gain(0.);
 
     // SinOsc osc => dac;
     // SawOsc osc => dac;
@@ -232,7 +229,7 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
         "sound_on" => e.name;
         e.signal();
         // if (Math.random2f(0,1) < 0.5) {
-            osc.gain(0.5);
+        g.gain(0.01);
         // }
         // if (Math.random2f(0,1) < 0.5) {
         //     osc2.gain(0.5);
@@ -243,10 +240,7 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
         step => now;
         "sound_off" => e.name;
         e.signal();
-
-        osc.gain(0.);
-        osc2.gain(0.);
-        osc3.gain(0.);
+        g.gain(0.);
         step => now;
     }
 }
