@@ -76,7 +76,8 @@ class Planet extends GSphere
             @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => tick.pos;
         }
 
-        spork ~ poly(beat_count, measure, 60 + beat_count, e, isPercussion);
+        Math.random2(0,1) => int variant;
+        spork ~ poly(beat_count, measure, variant, e, isPercussion);
         spork ~ listenForEvent(e);
     }
 
@@ -177,51 +178,30 @@ class Circle extends GGen
     }
 }
 
-// Sound experiment
-
-
-fun poly(int n, dur period, float midiNote, PlanetEvent e, int isPercussion) {
-
+// poly() schedules a sound to occur within a polyrhythmic pulse
+// note that it can be "on" or "off" beat within that pulse type
+// TODO(nate): Make this controllable. Then decide if randomness is nicer
+fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
+    //
     period => dur T;
     T / n => dur division;
     division / 2 => dur step;
 
     // wait til the next step
-    <<< "wait a little? (before) =", now >>>;
-    (step - now % step) => now;
-    <<< "wait a little? (after)  =", now >>>;
-
-    // Gain g;
-    // osc => g => dac;
-    // osc2 => g => dac;
-    // osc2.gain(0.);
-    // osc3 => g => dac;
-    // osc3.gain(0.);
-    // g.gain(0.);
-
-    // // SinOsc osc => dac;
-    // // SawOsc osc => dac;
-
-
-    // 35 => int rootMidiNote; // current "chord" / "color"
-    // [0, 3, 7, 10] @=> int chordOffsets[];// m7
-    // Math.random2(0, chordOffsets.size() - 1) => int notesIdx;
-
-    // // Randomly adjust octavek
-    // rootMidiNote + chordOffsets[notesIdx] => int midiNote;
-
-    // osc.freq(Std.mtof(midiNote));
-    // osc.freq(Std.mtof(midiNote));
-    // osc2.freq(Std.mtof(midiNote+4));
-    // osc3.freq(Std.mtof(midiNote+7));
+    // (step - now % step) => now;
+    // wait til the next division
+    (division - now % division) => now;
 
     new SoundMaker() @=> SoundMaker sm;
     while (true) {
         "sound_on" => e.name;
         e.signal();
         if (isPercussion) {
-            // spork ~ sm.playSample("kick.wav");
-            spork ~ sm.playSample("snare.wav");
+            if (variant == 0) {
+                spork ~ sm.playSample("kick.wav");
+            } else {
+                spork ~ sm.playSample("snare.wav");
+            }
         } else {
             spork ~ sm.playNote(step);
         }
@@ -304,7 +284,10 @@ fun vec3 randomPos3() {
     return @(x, y, 0.);
 }
 
+// TODO: consider a small UI layer to expose these sorts of things, for debugging.
+// so I can control the next planet(s)
 false => int isPercussion;
+0 => int instrumentVariant;
 
 while (true) {
     GG.nextFrame() => now;
@@ -312,6 +295,10 @@ while (true) {
     if (GWindow.keyDown(GWindow.Key_P)) {
         1 - isPercussion => isPercussion; // invert bool
     }
+
+    // if (GWindow.keyDown(GWindow.Key_V)) {
+    //     (instrumentVariant + 1) %  => instrumentVariant;
+    // }
 
     // if "pressed a number, add or remove a planet with that number"
     if (GWindow.keyDown(GWindow.Key_1)) {

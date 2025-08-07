@@ -8,7 +8,10 @@
     - [x] adding
     - [ ] removing
   - [ ] solar systems
-- make planets orbit in same system
+- [x] fix circles to align with offset "step", too
+  - forced alignment, for now! no OFFBEATS :(
+- [ ] make planets orbit in same system
+- [ ] as you add more planets, zoom out to fit contents
 - [ ] Add another solar system
   - [ ] allow some variation in SolarSystem sound (e.g. different synth per system)
 - allow some sound variation
