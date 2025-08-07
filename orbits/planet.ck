@@ -16,6 +16,8 @@ GGen galaxy --> GG.scene();
 
 // initScene();
 
+@import "samples.ck"
+
 // How best to listen for one of many events? General "event bus" listener
 class PlanetEvent extends Event
 {
@@ -204,6 +206,8 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
         new TriOsc() => osc;
         new TriOsc() => osc2;
         new TriOsc() => osc3;
+    } else if (variant == 3) {
+        "/Applications/miniAudicle.app/Contents/Resources/examples/data/" => string dataPath;
     }
 
     T / n => dur division;
@@ -228,6 +232,8 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
     while (true) {
         "sound_on" => e.name;
         e.signal();
+        new SoundMaker() @=> SoundMaker sm;
+        spork ~ sm.playSample("kick.wav");
         // if (Math.random2f(0,1) < 0.5) {
         g.gain(0.01);
         // }
