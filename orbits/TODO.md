@@ -1,16 +1,19 @@
 # TODO
 
 ## Tasks
-- [ ] Associate sounds with planet orbits
-  - cycle length
-  - beats per cycle
-  - sound is on or off... can we show that?
-    - e.g. change color when sound is active
-    - e.g. email particles at start of making sound
-  - sound has a length.. can we show that? e.g. "trail" when making sound
-- [ ] Allow adding an removing planets
+- [x] ensure orbit position matches loop position
+  - [x] v1, all orbits angles are synced visually (e.g. 'East' at same time)
+- [ ] Allow adding an removing components
+  - [ ] planets
+    - [x] adding
+    - [ ] removing
+  - [ ] solar systems
+- make planets orbit in same system
 - [ ] Add another solar system
   - [ ] allow some variation in SolarSystem sound (e.g. different synth per system)
+- allow some sound variation
+  - [ ] planets
+  - [ ] by system
 - [ ] change focus (zoom in/out)
 - [ ] Add a texture to the planet
 

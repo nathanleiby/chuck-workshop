@@ -1,22 +1,22 @@
 // Start position and orbit circle
 
 
+GGen galaxy --> GG.scene();
 
-fun initScene() {
-    // Galaxy
-    GGen galaxy --> GG.scene();
-    // Solar Systems
-    GGen solarSystem --> galaxy;
-    GGen solarSystem2 --> galaxy;
+// fun initScene() {
+//     // Galaxy
+//     // Solar Systems
+//     GGen solarSystem --> galaxy;
+//     GGen solarSystem2 --> galaxy;
 
-    solarSystem.pos(1., 0., 0.);
-    solarSystem2.pos(-1., 0., 0.);
+//     solarSystem.pos(1., 0., 0.);
+//     solarSystem2.pos(-1., 0., 0.);
 
-    new Planet(solarSystem, 1) @=> Planet planet;
-    new Planet(solarSystem2, 3) @=> Planet planet2;
-}
+//     // new Planet(solarSystem, 1) @=> Planet planet;
+//     // new Planet(solarSystem2, 3) @=> Planet planet2;
+// }
 
-initScene();
+// initScene();
 
 // How best to listen for one of many events? General "event bus" listener
 class PlanetEvent extends Event
@@ -42,9 +42,13 @@ class Planet extends GSphere
 
     PlanetEvent e;
 
+    time startTime;
+
     // initialize a planet
     fun @construct(GGen parent, int beat_count)
     {
+        now => startTime;
+
         @( Math.random2f(0,1), Math.random2f(0,1), Math.random2f(0,1) ) => planet_color;
         this.color(planet_color);
         this --> parent;
@@ -67,8 +71,8 @@ class Planet extends GSphere
             tick.init( TICK_RADIUS, 0.05, planet_color );
             tick --> parent;
 
-            (stepSize * i) / period => float phase; // phase from 0 -> 1
-            2 * Math.PI * phase => theta; // map phase to angle
+            (stepSize * i) / period => float progress; // progress from 0 -> 1
+            2 * Math.PI * progress => theta; // map phase to angle
             @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => tick.pos;
         }
 
@@ -83,8 +87,8 @@ class Planet extends GSphere
     fun void update( float dt )
     {
         // update logic for the planet can go here if needed
-        (now % period) / period => float phase; // phase from 0 -> 1
-        2 * Math.PI * phase => theta; // map phase to angle
+        getClockMeasureProgress() => float progress; // progress 0 -> 1 in loop
+        2 * Math.PI * progress => theta; // map progress to angle
         @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => this.pos;
     }
 
@@ -131,7 +135,6 @@ class Circle extends GGen
     // initialize a circle
     fun void init(float radius, float newPulse, vec3 myColor)
     {
-
         color( myColor );
         // TODO: variable shadowing is confusing! I had a arg called pulse and it was shadowed by the class variable pulse
         // pulse => pulse;
@@ -178,6 +181,8 @@ class Circle extends GGen
 
 
 fun poly(int n, dur period, float midiNote, PlanetEvent e) {
+    // now => dur startTime;
+
     period => dur T;
 
     Osc osc;
@@ -202,18 +207,27 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
         new TriOsc() => osc2;
         new TriOsc() => osc3;
     }
+
+    T / n => dur division;
+    division / 2 => dur step;
+
+    // wait til the next step
+    <<< "wait a little? (before) =", now >>>;
+    (step - now % step) => now;
+    <<< "wait a little? (after)  =", now >>>;
+
     osc => dac;
     osc2 => dac;
     osc3 => dac;
+    osc.gain(0.);
+    osc2.gain(0.);
+    osc3.gain(0.);
 
     // SinOsc osc => dac;
     // SawOsc osc => dac;
     osc.freq(Std.mtof(midiNote));
     osc2.freq(Std.mtof(midiNote+4));
     osc3.freq(Std.mtof(midiNote+7));
-
-    T / n => dur division;
-    division / 2 => dur step;
     while (true) {
         "sound_on" => e.name;
         e.signal();
@@ -237,6 +251,114 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
     }
 }
 
+GText measureText() --> GG.scene();
+measureText.text("");
+measureText.pos(1., 1., 0);
+measureText.sca(0.1);
+GText beatText() --> GG.scene();
+beatText.text("");
+beatText.pos(1., 0.9, 0);
+beatText.sca(0.1);
+
+fun float getClockPos() {
+    // TODO: how to make a global/shared const for use throughout a file?
+    0.6::second => dur BEAT_DUR; // 100 BPM
+    4 * BEAT_DUR => dur measure;
+    measure => dur period; // "year"?
+
+    now / measure => float pos;
+    // Math.floor(pos) => float whichMeasure;
+    // pos - whichMeasure => float beat;
+
+    return pos;
+}
+
+fun float getClockMeasure() {
+    getClockPos() => float pos;
+    return Math.floor(pos);
+}
+
+fun float getClockMeasureProgress() {
+    // returns [0,1] value of progress through the current "measure" (perhaps "loop" is better name)
+    return getClockPos() - getClockMeasure();
+}
+
+
+fun float getClockBeat() {
+    4. => float beats_per_measure;
+    return getClockMeasure() % beats_per_measure;
+}
+
+// fun getBeat() float {
+//     // getProgress() /
+//     // Math.floor(pos) => float whichMeasure;
+//     // pos - whichMeasure => float beat;
+
+// }
+
+// TODO:
+fun clock() {
+    // TODO: how to make a global/shared const for use throughout a file?
+    0.6::second => dur BEAT_DUR; // 100 BPM
+    4 * BEAT_DUR => dur measure;
+    measure => dur period; // "year"?
+
+    while (true) {
+        BEAT_DUR => now;
+
+        getClockPos() => float pos;
+        // now / measure => float pos;
+        Math.floor(pos) => float whichMeasure;
+        pos - whichMeasure => float beat;
+        <<< "Measure:", whichMeasure, "Beat:", beat >>>;
+        measureText.text("M = " + whichMeasure);
+        beatText.text("B = " + beat);
+    }
+
+} spork ~ clock();
+
 while (true) {
     GG.nextFrame() => now;
+
+    // if "pressed a number, add or remove a planet with that number"
+    if (GWindow.keyDown(GWindow.Key_1)) {
+        <<< "key.1 down" >>>;
+        // Solar Systems
+        GGen solarSystem --> galaxy;
+        Math.random2f(0,1) => float x;
+        Math.random2f(0,1) => float y;
+        solarSystem.pos(1. * x, 1. * y, 0.);
+        new Planet(solarSystem, 1) @=> Planet planet;
+    }
+
+    if (GWindow.keyDown(GWindow.Key_2)) {
+        <<< "key.2 down" >>>;
+        // Solar Systems
+        GGen solarSystem --> galaxy;
+        Math.random2f(0,1) => float x;
+        Math.random2f(0,1) => float y;
+        solarSystem.pos(1. * x, 1. * y, 0.);
+        new Planet(solarSystem, 2) @=> Planet planet;
+    }
+
+    if (GWindow.keyDown(GWindow.Key_3)) {
+        <<< "key.3 down" >>>;
+        // Solar Systems
+        GGen solarSystem --> galaxy;
+        Math.random2f(0,1) => float x;
+        Math.random2f(0,1) => float y;
+        solarSystem.pos(1. * x, 1. * y, 0.);
+        new Planet(solarSystem, 3) @=> Planet planet;
+    }
+
+    // TODO: manage remove
+
+    // Let user pause!
+    // if (GWindow.keyDown(GWindow.Key_P)) {
+    //     while(true) {
+
+    //     }
+    // }
+
 }
+

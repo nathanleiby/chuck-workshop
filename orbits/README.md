@@ -12,6 +12,12 @@
         - or at various 'notches' along the loop?
         - diff planets are "every 1, every 2, every 4, every 8"  .. maybe this is part of the randomness? or you can adjust the "intensity" of a planet
       - visual correspondence .. a planet should activate somehow when it creates sound
+        - sound is on or off... can we show that?
+          - [x] changed size and brightness
+          - e.g. email particles at start of making sound
+        - sound has a length.. can we show that?
+          - e.g. "trail" when making sound (i like carving arcs)
+
 - "feel"
   - goal: creative exploration
   - soaring, sense of scope and grandiosity
@@ -21,6 +27,15 @@
 
 ## RANDOM
 
+- audio "beats" -- could they trigger something more than a single note (boring?)
+  - play a sample?
+    - shaker (chuk-uh)
+  - play a riff (1.. 1. 1.)
+  - sometimes might want "off" beats (2,4,6,8) instead of down/on beats (1,3,5,7)
+    - e.g. kick vs snare
+    - e.g. 'disco' hihat alternation
+- visually, consider starting loop from "north" for better symmetry
+- consider non-circle shapes that show polyrhythm more clearly https://www.youtube.com/watch?v=XA-gDB1HWuQ&ab_channel=Wangbw
 - inspiration: mini-metro .. new stations pop up periodically and you have to manage them! you're stuck with it!
 - could we use the snowstorm particle effect to give the sense of space off stars far away?
 - Could you choose a central object for orbital speeds? "gravity" + music
