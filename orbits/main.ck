@@ -16,7 +16,7 @@ GGen galaxy --> GG.scene();
 
 // initScene();
 
-@import "samples.ck"
+@import "sound_maker.ck"
 
 // How best to listen for one of many events? General "event bus" listener
 class PlanetEvent extends Event
@@ -330,6 +330,12 @@ fun clock() {
 
 } spork ~ clock();
 
+fun vec3 randomPos3() {
+    Math.random2f(-1, 1) => float x;
+    Math.random2f(-1,1) => float y;
+    return @(x, y, 0.);
+}
+
 while (true) {
     GG.nextFrame() => now;
 
@@ -338,9 +344,7 @@ while (true) {
         <<< "key.1 down" >>>;
         // Solar Systems
         GGen solarSystem --> galaxy;
-        Math.random2f(0,1) => float x;
-        Math.random2f(0,1) => float y;
-        solarSystem.pos(1. * x, 1. * y, 0.);
+        solarSystem.pos(randomPos3());
         new Planet(solarSystem, 1) @=> Planet planet;
     }
 
@@ -348,9 +352,7 @@ while (true) {
         <<< "key.2 down" >>>;
         // Solar Systems
         GGen solarSystem --> galaxy;
-        Math.random2f(0,1) => float x;
-        Math.random2f(0,1) => float y;
-        solarSystem.pos(1. * x, 1. * y, 0.);
+        solarSystem.pos(randomPos3());
         new Planet(solarSystem, 2) @=> Planet planet;
     }
 
@@ -358,9 +360,7 @@ while (true) {
         <<< "key.3 down" >>>;
         // Solar Systems
         GGen solarSystem --> galaxy;
-        Math.random2f(0,1) => float x;
-        Math.random2f(0,1) => float y;
-        solarSystem.pos(1. * x, 1. * y, 0.);
+        solarSystem.pos(randomPos3());
         new Planet(solarSystem, 3) @=> Planet planet;
     }
 
