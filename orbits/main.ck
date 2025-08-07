@@ -221,19 +221,32 @@ fun poly(int n, dur period, float midiNote, PlanetEvent e) {
     Gain g;
     osc => g => dac;
     osc2 => g => dac;
+    osc2.gain(0.);
     osc3 => g => dac;
+    osc3.gain(0.);
     g.gain(0.);
 
     // SinOsc osc => dac;
     // SawOsc osc => dac;
+
+
+    35 => int rootMidiNote; // current "chord" / "color"
+    [0, 3, 7, 10] @=> int chordOffsets[];// m7
+    Math.random2(0, chordOffsets.size() - 1) => int notesIdx;
+
+    // Randomly adjust octavek
+    rootMidiNote + chordOffsets[notesIdx] => int midiNote;
+
     osc.freq(Std.mtof(midiNote));
-    osc2.freq(Std.mtof(midiNote+4));
-    osc3.freq(Std.mtof(midiNote+7));
+    // osc.freq(Std.mtof(midiNote));
+    // osc2.freq(Std.mtof(midiNote+4));
+    // osc3.freq(Std.mtof(midiNote+7));
     while (true) {
         "sound_on" => e.name;
         e.signal();
         new SoundMaker() @=> SoundMaker sm;
-        spork ~ sm.playSample("kick.wav");
+        // spork ~ sm.playSample("kick.wav");
+        spork ~ sm.playSample("snare.wav");
         // if (Math.random2f(0,1) < 0.5) {
         g.gain(0.01);
         // }
