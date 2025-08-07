@@ -1,138 +1,56 @@
 // Start position and orbit circle
 
-// Galaxy
-// Solar System
-// Planet
-// Moon
 
-GGen galaxy;
-GGen solarSystem;
-GGen solarSystem2;
 
-solarSystem --> galaxy;
-solarSystem2 --> galaxy;
-galaxy --> GG.scene();
+fun initScene() {
+    // Galaxy
+    GGen galaxy --> GG.scene();
+    // Solar Systems
+    GGen solarSystem --> galaxy;
+    GGen solarSystem2 --> galaxy;
 
-solarSystem.pos(1., 0., 0.);
-solarSystem2.pos(-1., 0., 0.);
+    solarSystem.pos(1., 0., 0.);
+    solarSystem2.pos(-1., 0., 0.);
 
-// // play sound at a scheduled time (when), lasting for a certain length (beats)
-// fun void playNote(dur when, float beats, int noteType) {
-//     if (noteType < 4) {
-//         tri.gain(.2);
-//         // TODO: is random2 inclusive of RHS?
-//         // TODO: can we assert? e.g. 0 <= noteType <= 3
-//         midiNotes[noteType] => int freq;
-//         Std.mtof(freq) => tri.freq; // frequency
+    new Planet(solarSystem, 1) @=> Planet planet;
+    new Planet(solarSystem2, 3) @=> Planet planet2;
+}
 
-//         // TODO: beats * BEAT_DUR // BEAT_DUR isn't local
-//         beats * 0.25::second => now;
-//         tri.gain(0.);
-//     } else {
-//         // load the sample
-//         "/Applications/miniAudicle.app/Contents/Resources/examples/data/" => string dataPath;
+initScene();
 
-//         SndBuf buf => Gain g => dac;
-//         .5 => g.gain;
-
-//         when => now;
-//         if (noteType == 4) {
-//             <<< "playing kick drum" >>>;
-//             buf.read(dataPath + "kick.wav");
-//             buf.pos(0);
-//             buf.length() => now;
-//         }  else if (noteType == 5) {
-//             // play snare
-//             <<< "playing snare" >>>;
-//             buf.read(dataPath + "snare.wav");
-//             buf.pos(0);
-//             buf.length() => now;
-//         } else if (noteType == 6) {
-//             // play hihat
-//             <<< "playing hihat-open" >>>;
-//             buf.read(dataPath + "hihat-open.wav");
-//             buf.pos(0);
-//             buf.length() => now;
-//         } else if (noteType == 7) {
-//             // play crash
-//             <<< "playing crash" >>>;
-//             buf.read(dataPath + "snare-hop.wav");
-//             buf.pos(0);
-//             buf.length() => now;
-//         }
-//         else {
-//             <<< "Invalid note type: " + noteType >>>;
-//             me.exit();
-//         }
-//     }
-// }
+// How best to listen for one of many events? General "event bus" listener
+class PlanetEvent extends Event
+{
+    string name;
+}
 
 class Planet extends GSphere
 {
-    // SOUND
-    [60, 62, 64, 65] @=> int midiNotes[];
-    fun void playSound(int isTri) {
-        if (isTri) {
-            TriOsc osc => dac;
-            osc.gain(0.);
-            Math.random2(0, 3) => int noteType;
-            midiNotes[noteType] => int freq;
-            Std.mtof(freq) => osc.freq; // frequency
-            osc.gain(.2);
-            0.1::second => now;
-            osc.gain(0.);
-        } else {
-            SinOsc osc => dac;
-            osc.gain(0.);
-            Math.random2(0, 3) => int noteType;
-            midiNotes[noteType] => int freq;
-            Std.mtof(freq) => osc.freq; // frequency
-            osc.gain(.2);
-            0.1::second => now;
-            osc.gain(0.);
-        }
-    }
-
-    fun void playSoundEvery(dur interval, int isTri)
-    {
-        while (true) {
-            spork ~ playSound(isTri);
-            interval => now;
-        }
-    }
-
-    // VISUAL
-    // SphereGeometry sphere_geo;
-    // FlatMaterial mat3;
-    // mat3.color(planet_color);
-    // GMesh sphere(sphere_geo, mat3) @=> GMesh planet;
     0.5 => float planet_radius;
     Color.GREEN => vec3 planet_color;
     1.3 => float orbit_radius;
-
-    // planet.sca(planet_radius);
     this.sca(planet_radius);
 
-    0.8 * Math.PI  => float theta;
+    // position within the orbit (init theta to control starting position)
+    0. => float theta;
 
     0.6::second => dur BEAT_DUR; // 100 BPM
     7 => float BEAT_COUNT;
-    // BEAT_COUNT * BEAT_DUR  => dur period; // "year"?
+
     4 * BEAT_DUR => dur measure;
     measure => dur period; // "year"?
 
-    // how many vertices per circle? (more == smoother)
-    128 => int N;
+    PlanetEvent e;
 
     // initialize a planet
-    fun @construct(GGen parent, float beat_count)
+    fun @construct(GGen parent, int beat_count)
     {
-        @( Math.random2f(0,1), Math.random2f(0,1), Math.random2f(0,1) ) => vec3 planet_color;
+        @( Math.random2f(0,1), Math.random2f(0,1), Math.random2f(0,1) ) => planet_color;
         this.color(planet_color);
         this --> parent;
 
         beat_count => BEAT_COUNT;
-        BEAT_COUNT * BEAT_DUR  => period; // "year"?
+        // BEAT_COUNT * BEAT_DUR  => period; // "year"?
 
         // Add its orbit, too
         Circle circ;
@@ -149,23 +67,13 @@ class Planet extends GSphere
             tick.init( TICK_RADIUS, 0.05, planet_color );
             tick --> parent;
 
-            (stepSize * i) / period=> float phase; // phase from 0 -> 1
+            (stepSize * i) / period => float phase; // phase from 0 -> 1
             2 * Math.PI * phase => theta; // map phase to angle
             @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => tick.pos;
         }
 
-        // what sound to play?
-        1 => int isTri;
-        if (beat_count == 4) {
-            1=>isTri;
-        } else if (beat_count == 7) {
-            0=>isTri;
-        } else {
-            <<< "Invalid beat count: " + beat_count >>>;
-            me.exit();
-        }
-
-        spork ~ playSoundEvery(stepSize, isTri);;
+        spork ~ poly(beat_count, measure, 60 + beat_count, e);
+        spork ~ listenForEvent(e);
     }
 
     fun void parent(GGen newParent) {
@@ -178,6 +86,25 @@ class Planet extends GSphere
         (now % period) / period => float phase; // phase from 0 -> 1
         2 * Math.PI * phase => theta; // map phase to angle
         @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => this.pos;
+    }
+
+    fun void listenForEvent(PlanetEvent event)
+    {
+        // infinite loop
+        while ( true )
+        {
+            // wait on event
+            event => now;
+            // print
+            <<< "Planet event received: ", event.name, " at time: ", now >>>;
+            if (event.name == "sound_on") {
+                this.sca(planet_radius * 1.5);
+                this.color(planet_color * 2.);
+            } else if (event.name == "sound_off") {
+                this.sca(planet_radius * 1.);
+                this.color(planet_color);
+            }
+        }
     }
 }
 
@@ -247,9 +174,68 @@ class Circle extends GGen
     }
 }
 
+// Sound experiment
 
-new Planet(solarSystem, 7) @=> Planet planet;
-new Planet(solarSystem2, 4) @=> Planet planet2;
+
+fun poly(int n, dur period, float midiNote, PlanetEvent e) {
+    period => dur T;
+
+    Osc osc;
+    Osc osc2;
+    Osc osc3;
+    n % 3 => int variant;
+    Math.randomize();
+    Math.random2(0,2) => variant;
+    if (variant == 0) {
+        <<< "Using SinOsc variant" >>>;
+        new SinOsc() => osc;
+        new SinOsc() => osc2;
+        new SinOsc() => osc3;
+    } else if (variant == 1) {
+        <<< "Using SawOsc variant" >>>;
+        new SawOsc() => osc;
+        new SawOsc() => osc2;
+        new SawOsc() => osc3;
+    } else if (variant == 2) {
+        <<< "Using TriOsc variant" >>>;
+        new TriOsc() => osc;
+        new TriOsc() => osc2;
+        new TriOsc() => osc3;
+    }
+    osc => dac;
+    osc2 => dac;
+    osc3 => dac;
+
+    // SinOsc osc => dac;
+    // SawOsc osc => dac;
+    osc.freq(Std.mtof(midiNote));
+    osc2.freq(Std.mtof(midiNote+4));
+    osc3.freq(Std.mtof(midiNote+7));
+
+    T / n => dur division;
+    division / 2 => dur step;
+    while (true) {
+        "sound_on" => e.name;
+        e.signal();
+        // if (Math.random2f(0,1) < 0.5) {
+            osc.gain(0.5);
+        // }
+        // if (Math.random2f(0,1) < 0.5) {
+        //     osc2.gain(0.5);
+        // }
+        // if (Math.random2f(0,1) < 0.5) {
+        //     osc3.gain(0.5);
+        // }
+        step => now;
+        "sound_off" => e.name;
+        e.signal();
+
+        osc.gain(0.);
+        osc2.gain(0.);
+        osc3.gain(0.);
+        step => now;
+    }
+}
 
 while (true) {
     GG.nextFrame() => now;
