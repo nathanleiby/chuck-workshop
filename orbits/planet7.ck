@@ -16,7 +16,7 @@ planet --> GG.scene();
 0.8 * Math.PI  => float theta;
 
 0.6::second => dur BEAT_DUR; // 100 BPM
-4 => float BEAT_COUNT;
+7 => float BEAT_COUNT;
 BEAT_COUNT * BEAT_DUR  => dur period; // "year"?
 
 // how many circles?

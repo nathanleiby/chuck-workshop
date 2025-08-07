@@ -21,6 +21,7 @@
 
 ## RANDOM
 
+- inspiration: mini-metro .. new stations pop up periodically and you have to manage them! you're stuck with it!
 - could we use the snowstorm particle effect to give the sense of space off stars far away?
 - Could you choose a central object for orbital speeds? "gravity" + music
 - "moondulator" -- use moons to modulate planet behavior?

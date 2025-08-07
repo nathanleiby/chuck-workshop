@@ -5,6 +5,8 @@ Draw the sun
 Draw a planet
 Draw the planet's orbit
 Play a sound every time the planet arrives at its start location
+Add another solar system
+Add a texture to the planet
 
 ## Questions
 
