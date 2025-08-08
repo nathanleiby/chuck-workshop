@@ -103,7 +103,7 @@ class Planet extends GSphere
             // wait on event
             event => now;
             // print
-            <<< "Planet event received: ", event.name, " at time: ", now >>>;
+            // <<< "Planet event received: ", event.name, " at time: ", now >>>;
             if (event.name == "sound_on") {
                 this.sca(planet_radius * 1.5);
                 this.color(planet_color * 2.);
@@ -273,7 +273,7 @@ fun clock() {
         // now / measure => float pos;
         Math.floor(pos) => float whichMeasure;
         pos - whichMeasure => float beat;
-        <<< "Measure:", whichMeasure, "Beat:", beat >>>;
+        // <<< "Measure:", whichMeasure, "Beat:", beat >>>;
         measureText.text("M = " + whichMeasure);
         beatText.text("B = " + beat);
     }
@@ -291,8 +291,8 @@ fun vec3 randomPos3() {
 false => int isPercussion;
 0 => int instrumentVariant;
 
-while (true) {
-    GG.nextFrame() => now;
+fun handleUserInput() {
+    // TODO: Allow creating Solar Systems
 
     if (GWindow.keyDown(GWindow.Key_P)) {
         1 - isPercussion => isPercussion; // invert bool
@@ -302,39 +302,25 @@ while (true) {
     //     (instrumentVariant + 1) %  => instrumentVariant;
     // }
 
-    // if "pressed a number, add or remove a planet with that number"
-    if (GWindow.keyDown(GWindow.Key_1)) {
-        <<< "key.1 down" >>>;
-        // Solar Systems
-        GGen solarSystem --> galaxy;
-        solarSystem.pos(randomPos3());
-        new Planet(solarSystem, 1, isPercussion) @=> Planet planet;
+    int keyCodes[10];
+    for (int i; i < 10; i++) {
+        GWindow.Key_1 + i - 1 @=> keyCodes[i];
     }
 
-    if (GWindow.keyDown(GWindow.Key_2)) {
-        <<< "key.2 down" >>>;
-        // Solar Systems
-        GGen solarSystem --> galaxy;
-        solarSystem.pos(randomPos3());
-        new Planet(solarSystem, 2, isPercussion) @=> Planet planet;
+    for (int keyCode : keyCodes) {
+        if (GWindow.keyDown(keyCode)) {
+            keyCode - GWindow.Key_1 + 1 => int keyNumber;
+            <<< "key down", keyNumber, "(Code =", keyCode, ")" >>>;
+            GGen solarSystem --> galaxy;
+            solarSystem.pos(randomPos3());
+            new Planet(solarSystem, keyNumber, isPercussion) @=> Planet planet;
+        }
     }
+}
 
-    if (GWindow.keyDown(GWindow.Key_3)) {
-        <<< "key.3 down" >>>;
-        // Solar Systems
-        GGen solarSystem --> galaxy;
-        solarSystem.pos(randomPos3());
-        new Planet(solarSystem, 3, isPercussion) @=> Planet planet;
-    }
+while (true) {
+    GG.nextFrame() => now;
 
-    // TODO: manage remove
-
-    // Let user pause!
-    // if (GWindow.keyDown(GWindow.Key_P)) {
-    //     while(true) {
-
-    //     }
-    // }
-
+    handleUserInput();
 }
 

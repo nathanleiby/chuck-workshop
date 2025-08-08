@@ -26,4 +26,5 @@
 - [..] How do I put a texture on an orb?
   - we did 2d texture so probably good enough for now
 - [ ] Any tips on creating a "space" like effect? (e.g. shaders, particles)
-
+- [ ] Expressive "Range" operator in Chuck?
+  - are Arrays most like "lists" (i.e. dynamic length)? or C-style arrays?
