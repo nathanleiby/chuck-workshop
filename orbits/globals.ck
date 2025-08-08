@@ -8,6 +8,4 @@ public class Globals {
     // static Gain predac => dac;
     // Gain _predac @=> static Gain predac;
     //  => dac;
-
-
 }
