@@ -19,7 +19,7 @@ public class SoundMaker {
         buf.length() => now;
     }
 
-    fun playNote(dur length) {
+    fun playNote(dur length, int midiNote) {
         Osc osc;
         Math.randomize();
         Math.random2(0,2) => int variant;
@@ -38,19 +38,8 @@ public class SoundMaker {
         osc => g => dac;
         g.gain(0.);
 
-        42 => int rootMidiNote; // current "chord" / "color"
-
-        // various chords:
-        // [0, 4, 7, 11] @=> int chordOffsets[];// M7
-        // [0, 4, 7, 10] @=> int chordOffsets[];// 7
-        [0, 3, 7, 10] @=> int chordOffsets[];// m7
-        Math.random2(0, chordOffsets.size() - 1) => int notesIdx;
-
-        // TODO: Randomly adjust octave
-        rootMidiNote + chordOffsets[notesIdx] => int midiNote;
-
         osc.freq(Std.mtof(midiNote));
-        g.gain(0.01);
+        g.gain(0.1);
 
         length => now;
         g.gain(0.);

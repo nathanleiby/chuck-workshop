@@ -38,7 +38,6 @@ class Planet extends GGen
     measure => dur period; // "year"?
 
     PlanetEvent e;
-
     time startTime;
 
     // initialize a planet
@@ -46,12 +45,14 @@ class Planet extends GGen
     {
         now => startTime;
 
-        @( Math.random2f(0,1), Math.random2f(0,1), Math.random2f(0,1) ) => planet_color;
+        // https://chuck.stanford.edu/chugl/api/chugl-basic.html#Color .. Convert RGB to 0->1
+        [0x4B0082, 0x4682B4, 0xFF6EC7, 0x000000, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
+        Math.random2(0, colorPalette.size()-1) => int colorIndex;
+        Color.hex(colorPalette[colorIndex]) => planet_color;
         mat3.color(planet_color);
         this --> parent;
 
         beat_count => BEAT_COUNT;
-        // BEAT_COUNT * BEAT_DUR  => period; // "year"?
 
         // Add its orbit, too
         Circle circ;
@@ -200,7 +201,38 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
                 spork ~ sm.playSample("snare.wav");
             }
         } else {
-            spork ~ sm.playNote(step);
+            // various chords available
+            [
+                [0, 4, 7, 11], // M7
+                [0, 4, 7, 10], // 7
+                [0, 3, 7, 10], // m7
+            ] @=> int chords[][];
+
+            // SONG
+            [42, 44, 46, 47] @=> int rootNotes[];
+            [0,2,2,0] @=> int chordTypes[];
+            4 => int songLength;
+            if (rootNotes.size() != chordTypes.size() != songLength) {
+                <<< "ERROR -- need a chord for each root note in the song ... expected songLength = ", songLength >>>;
+                me.exit();
+            }
+            getClockMeasureI() % 4 => int songIdx;
+
+
+
+
+
+
+            // TODO: Randomly adjust octave for each planet -- keep consistent for a planet
+
+            rootNotes[songIdx] => int rootMidiNote; // current root
+            chordTypes[songIdx] => int chordIdx; // current chord
+
+            chords[chordIdx] @=> int chordOffsets[];
+            Math.random2(0, chordOffsets.size() - 1) => int notesIdx; // random note within the chord
+            rootMidiNote + chordOffsets[notesIdx] => int midiNote; // specific midiNote, accounting for root
+
+            spork ~ sm.playNote(step, midiNote);
         }
         step => now;
         "sound_off" => e.name;
@@ -219,6 +251,12 @@ fun float getClockMeasure() {
     getClockPos() => float pos;
     return Math.floor(pos);
 }
+
+fun int getClockMeasureI() {
+    getClockPos() => float pos;
+    return Math.floor(pos) $ int;
+}
+
 
 fun float getClockMeasureProgress() {
     // returns [0,1] value of progress through the current "measure" (perhaps "loop" is better name)

@@ -117,3 +117,25 @@
   - Or maybe a "composer", who thinks about how to build the overall song over time (esp for a non-interactive lil demo)
 - consider points along cycle not just as "hits", but as "moments" .. for a synth, maybe it's a volume envelope?
 - Explore if more 3d-ness looks cooler or not (e.g. textured planets, more active camera)
+- allow various viewpoints
+  ... what would it feel like to be standing on another planet's surface and watching?
+
+- allow change in focus
+  ... zooming in on a solar system should focus on its sound
+  .... zooming out for galaxy view should balance levels
+  (Motivation: might you "solo" a track to edit its details, e.g. when tuning a specific notes modulation)
+
+- so many cycles?
+  ... could a planets rotation ("day") cycle be a modulator
+  ... could a cycle upon a planet be happening? (War and peace, life and death of inviduals, etc.. like some like of simcity)
+  ... could the whole universe be a cycle? Start with big bang and universe expands? Cosmic dust congealing to create planets? -> expansion over time aligns maybe with mini metro like vision
+(Probably a future idea!! Keep it simple)
+
+
+
+Sound!!
+- space should start with ambient wispy noise (vs nothing). Maybe a deep single pad node to give a tonality, but it only moves rarely? (Every 32 beats perhaps) .. or a white noise adjacent abstract
+- explore changing the fundamentals measure size.. (today, 4 beats).. maybe 3/4 (or 6/8) would be nice for waltz epic like mass effect
+- panning shaker sounds
+- pick one Mass Effect soundtrack song and go for it! .. I think mass effect song one and cresh to cymbals and fade out
+- something like bells? The Normandy has those
