@@ -446,9 +446,7 @@ true => int isRotationLocked;
 
 fun updateTarget() {
     (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
-    if (currentTargetIdx == 1) {
-        true => isPercussion;
-    }
+    currentTargetIdx == 1 => isPercussion; // TODO: make targets work generally
 
     // TODO: set current zoomIdx to 0 too?
     0 => currentZoomIdx;
