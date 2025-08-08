@@ -11,7 +11,8 @@ public class SoundMaker {
         "/Applications/miniAudicle.app/Contents/Resources/examples/data/" => string dataPath;
         SndBuf buf => Gain g => dac;
         // add more variation to drums, for humanity
-        Math.random2f(0.11, 0.15) => g.gain;
+        Math.random2f(0.22, 0.3) => g.gain;
+
         // buf.freq() * Math.random2f(0.9, 1.1) =>  buf.freq;
 
         <<< "playing sample: ", name >>>;

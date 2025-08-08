@@ -1,6 +1,23 @@
 @import "globals.ck"
 @import "sound_maker.ck"
 
+// window title
+GG.windowTitle( "Orbits" );
+// fullscreen
+// GG.fullscreen();
+// position
+// GG.camera().posZ( 3 );
+
+GCamera cam --> GG.scene();
+GG.scene().camera(cam);
+
+class SolarSystem extends GPlane
+{
+    fun @construct() {
+
+    }
+}
+
 // How best to listen for one of many events? General "event bus" listener
 class PlanetEvent extends Event
 {
@@ -24,7 +41,8 @@ class Planet extends GGen
     // FlatMaterial mat3;
     // mat3.color(planet_color);
     // this.mat(mat3);
-    Math.random2f(0.7, 1.5) => float orbit_radius;
+    // Math.random2f(0.7, 1.5) => float orbit_radius;
+    0. => float orbit_radius;
     // this.sca(planet_radius);
 
     // position within the orbit (init theta to control starting position)
@@ -44,6 +62,8 @@ class Planet extends GGen
     fun @construct(GGen parent, int beat_count, int isPercussion)
     {
         now => startTime;
+
+        0.6 + beat_count * 0.2 => orbit_radius;
 
         // https://chuck.stanford.edu/chugl/api/chugl-basic.html#Color .. Convert RGB to 0->1
         // [0x4B0082, 0x4682B4, 0xFF6EC7, 0x000000, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
@@ -365,6 +385,10 @@ GMesh sun2(sphere_geo, sun2mat);
 sun2 --> solarSystemPercussion;
 sun2.sca(0.9);
 
+cam.pos(solarSystemNotes.posX(), solarSystemNotes.posY(), 0. );
+// cam.pos(solarSystemNotes.pos());
+
+
 fun handleUserInput() {
     // TODO: Allow creating Solar Systems
 
@@ -418,5 +442,19 @@ while (true) {
     bloom_pass.intensity(bloom_intensity);
 
     handleUserInput();
+
+    // 0.01 => float zoomOutRate;
+    solarSystemNotes @=> GGen target;
+    0.02 => float zoomOutRate;
+    if (getClockMeasure() > 4) 0.1 => zoomOutRate;
+    if (getClockMeasure() > 8) 0.2 => zoomOutRate;
+    if (getClockMeasure() > 16) {
+        0.2 => zoomOutRate;
+    }
+
+    cam.posZ(cam.posZ() + zoomOutRate * GG.dt());
+    cam.lookAt(target.pos());
+
+    // move outward and rotate in polar coords
 }
 
