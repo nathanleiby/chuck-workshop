@@ -368,7 +368,7 @@ false => int isPercussion;
 GGen galaxy --> GG.scene();
 
 GGen solarSystemNotes --> galaxy;
-solarSystemNotes.pos(1.,0.,0.);
+solarSystemNotes.pos(5.,0.,0.);
 
 SphereGeometry sphere_geo;
 FlatMaterial mat3;
@@ -376,17 +376,18 @@ mat3.color(2. * Color.YELLOW);
 GMesh sun1(sphere_geo, mat3);
 sun1 --> solarSystemNotes;
 sun1.sca(0.7);
+GPointLight sun1light --> sun1;
 
 GGen solarSystemPercussion --> galaxy;
-solarSystemPercussion.pos(-1.,0.,0.);
+solarSystemPercussion.pos(-5.,0.,0.);
 FlatMaterial sun2mat;
 sun2mat.color(3.0 * Color.RED);
 GMesh sun2(sphere_geo, sun2mat);
 sun2 --> solarSystemPercussion;
 sun2.sca(0.9);
 
-cam.pos(solarSystemNotes.posX(), solarSystemNotes.posY(), 0. );
-// cam.pos(solarSystemNotes.pos());
+// cam.pos(solarSystemNotes.posX(), solarSystemNotes.posY(), 0. );
+cam.pos(0, 0, 20.);
 
 
 fun handleUserInput() {
@@ -443,17 +444,18 @@ while (true) {
 
     handleUserInput();
 
-    // 0.01 => float zoomOutRate;
-    solarSystemNotes @=> GGen target;
-    0.02 => float zoomOutRate;
-    if (getClockMeasure() > 4) 0.1 => zoomOutRate;
-    if (getClockMeasure() > 8) 0.2 => zoomOutRate;
-    if (getClockMeasure() > 16) {
-        0.2 => zoomOutRate;
-    }
+    // Camera storyteller
+    // // 0.01 => float zoomOutRate;
+    // solarSystemNotes @=> GGen target;
+    // 0.02 => float zoomOutRate;
+    // if (getClockMeasure() > 4) 0.1 => zoomOutRate;
+    // if (getClockMeasure() > 8) 0.2 => zoomOutRate;
+    // if (getClockMeasure() > 16) {
+    //     0.2 => zoomOutRate;
+    // }
 
-    cam.posZ(cam.posZ() + zoomOutRate * GG.dt());
-    cam.lookAt(target.pos());
+    // cam.posZ(cam.posZ() + zoomOutRate * GG.dt());
+    // cam.lookAt(target.pos());
 
     // move outward and rotate in polar coords
 }
