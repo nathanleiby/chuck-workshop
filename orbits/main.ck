@@ -27,9 +27,9 @@ class PlanetEvent extends Event
 
 class Planet extends GSphere
 {
-    0.5 => float planet_radius;
+    Math.random2f(0.05, 0.15) => float planet_radius;
     Color.GREEN => vec3 planet_color;
-    1.3 => float orbit_radius;
+    Math.random2f(0.4, 1.5) => float orbit_radius;
     this.sca(planet_radius);
 
     // position within the orbit (init theta to control starting position)
@@ -291,6 +291,11 @@ fun vec3 randomPos3() {
 false => int isPercussion;
 0 => int instrumentVariant;
 
+GGen solarSystemNotes --> galaxy;
+solarSystemNotes.pos(1.,0.,0.);
+GGen solarSystemPercussion --> galaxy;
+solarSystemPercussion.pos(-1.,0.,0.);
+
 fun handleUserInput() {
     // TODO: Allow creating Solar Systems
 
@@ -310,10 +315,15 @@ fun handleUserInput() {
     for (int keyCode : keyCodes) {
         if (GWindow.keyDown(keyCode)) {
             keyCode - GWindow.Key_1 + 1 => int keyNumber;
-            <<< "key down", keyNumber, "(Code =", keyCode, ")" >>>;
-            GGen solarSystem --> galaxy;
-            solarSystem.pos(randomPos3());
-            new Planet(solarSystem, keyNumber, isPercussion) @=> Planet planet;
+            <<< "key down", keyNumber, "(CodAe =", keyCode, ")" >>>;
+            GGen whichSystem;
+            if (isPercussion) {
+                solarSystemPercussion @=> whichSystem;
+            } else {
+                solarSystemNotes @=> whichSystem;
+            }
+
+            new Planet(whichSystem, keyNumber, isPercussion) @=> Planet planet;
         }
     }
 }

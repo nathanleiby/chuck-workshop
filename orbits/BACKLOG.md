@@ -1,9 +1,6 @@
-# TODO
+# Backlog
 
-## Tasks
-- merge visual and sound concepts (1h)
-- add a global clock with chords/colors, so there's a sense of song / movement (1h)
-- make prettier sounds - samples, etc (2h)
+Work on these **later**.
 
 - [x] ensure orbit position matches loop position
   - [x] v1, all orbits angles are synced visually (e.g. 'East' at same time)

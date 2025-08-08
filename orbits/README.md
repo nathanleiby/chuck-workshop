@@ -111,3 +111,9 @@
   - consider showing orbit as a trail, vs full solid circle
   - or variants: lighter/dotted/dash-dotted/etc
 
+- consider: when building a solar system (instrument) consider weighting "note" priority. e.g. if instrument is a drum machine, should it be more likely to start with kicks? (or maybe kick is a specific kind of percussion planet, and there are many types of percussion planets? "note" vs "instrument".. drum kit has more varied instruments in a way with specific roles, vs a tonal instrument where pitches are more meaningful?!)
+- "Conductor" - Create swells. pauses.
+  - Thinking more broadly, a "Director" would be good for camera work.
+  - Or maybe a "composer", who thinks about how to build the overall song over time (esp for a non-interactive lil demo)
+- consider points along cycle not just as "hits", but as "moments" .. for a synth, maybe it's a volume envelope?
+- Explore if more 3d-ness looks cooler or not (e.g. textured planets, more active camera)
