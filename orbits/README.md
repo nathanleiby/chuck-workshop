@@ -6,6 +6,23 @@
     - 2d: https://space-facts.com/planet-orbits/
     - later: 3d seems nice for excellent camera and lightin
 - Audio
+    - ideas:
+      - reverb:
+        - JCR
+        - built-in chugin: [GVerb](https://chuck.stanford.edu/doc/reference/chugins.html#GVerb)
+        - chugi via chump: https://plinkysynth.com/
+      - pads:
+        - filtered saw waves into a nice reverb
+          - maybe a gating effect?
+        - Lead303 ... PulseOsc => LPF => ASDR => outlet;
+        - throw on... filter/reverb/delay
+      - instruments: Strings, brief keys
+      - Space sounds:
+        - Hans Zimmer interstellar
+          - FM7 (no 5) -> G7 (no 5) -> Asus2 .. sus? major 7 and major 9
+        - Mass Effect
+          - low wombing
+        - star trek
     - Polyrhythm aligned with orbit cycle of the planet
       - noise every time it..
         - does a full cycle?

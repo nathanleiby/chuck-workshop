@@ -16,6 +16,7 @@ GGen galaxy --> GG.scene();
 
 // initScene();
 
+@import "globals.ck"
 @import "sound_maker.ck"
 
 // How best to listen for one of many events? General "event bus" listener
@@ -34,7 +35,8 @@ class Planet extends GSphere
     // position within the orbit (init theta to control starting position)
     0. => float theta;
 
-    0.6::second => dur BEAT_DUR; // 100 BPM
+    // 0.6::second => dur BEAT_DUR; // 100 BPM
+    Globals.BEAT_DUR => dur BEAT_DUR;
     7 => float BEAT_COUNT;
 
     4 * BEAT_DUR => dur measure;
