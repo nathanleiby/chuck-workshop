@@ -1,21 +1,3 @@
-// Start position and orbit circle
-GGen galaxy --> GG.scene();
-
-// fun initScene() {
-//     // Galaxy
-//     // Solar Systems
-//     GGen solarSystem --> galaxy;
-//     GGen solarSystem2 --> galaxy;
-
-//     solarSystem.pos(1., 0., 0.);
-//     solarSystem2.pos(-1., 0., 0.);
-
-//     // new Planet(solarSystem, 1) @=> Planet planet;
-//     // new Planet(solarSystem2, 3) @=> Planet planet2;
-// }
-
-// initScene();
-
 @import "globals.ck"
 @import "sound_maker.ck"
 
@@ -29,6 +11,9 @@ class Planet extends GSphere
 {
     Math.random2f(0.05, 0.15) => float planet_radius;
     Color.GREEN => vec3 planet_color;
+    FlatMaterial mat3;
+    mat3.color(planet_color);
+    this.mat(mat3);
     Math.random2f(0.4, 1.5) => float orbit_radius;
     this.sca(planet_radius);
 
@@ -52,7 +37,7 @@ class Planet extends GSphere
         now => startTime;
 
         @( Math.random2f(0,1), Math.random2f(0,1), Math.random2f(0,1) ) => planet_color;
-        this.color(planet_color);
+        mat3.color(planet_color);
         this --> parent;
 
         beat_count => BEAT_COUNT;
@@ -214,26 +199,10 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
     }
 }
 
-GText measureText() --> GG.scene();
-measureText.text("");
-measureText.pos(1., 1., 0);
-measureText.sca(0.1);
-GText beatText() --> GG.scene();
-beatText.text("");
-beatText.pos(1., 0.9, 0);
-beatText.sca(0.1);
-
 fun float getClockPos() {
-    // TODO: how to make a global/shared const for use throughout a file?
-    0.6::second => dur BEAT_DUR; // 100 BPM
-    4 * BEAT_DUR => dur measure;
+    4 * Globals.BEAT_DUR => dur measure;
     measure => dur period; // "year"?
-
-    now / measure => float pos;
-    // Math.floor(pos) => float whichMeasure;
-    // pos - whichMeasure => float beat;
-
-    return pos;
+    return now / measure;
 }
 
 fun float getClockMeasure() {
@@ -252,33 +221,26 @@ fun float getClockBeat() {
     return getClockMeasure() % beats_per_measure;
 }
 
-// fun getBeat() float {
-//     // getProgress() /
-//     // Math.floor(pos) => float whichMeasure;
-//     // pos - whichMeasure => float beat;
-
-// }
-
-// TODO:
 fun clock() {
-    // TODO: how to make a global/shared const for use throughout a file?
-    0.6::second => dur BEAT_DUR; // 100 BPM
-    4 * BEAT_DUR => dur measure;
+    false => int SHOW_DEBUG_UI;
+
+    4 * Globals.BEAT_DUR => dur measure;
     measure => dur period; // "year"?
 
     while (true) {
-        BEAT_DUR => now;
+        Globals.BEAT_DUR => now;
 
         getClockPos() => float pos;
-        // now / measure => float pos;
         Math.floor(pos) => float whichMeasure;
         pos - whichMeasure => float beat;
         // <<< "Measure:", whichMeasure, "Beat:", beat >>>;
-        measureText.text("M = " + whichMeasure);
-        beatText.text("B = " + beat);
+        if (SHOW_DEBUG_UI) {
+            measureText.text("M = " + whichMeasure);
+            beatText.text("B = " + beat);
+        }
     }
 
-} spork ~ clock();
+}
 
 fun vec3 randomPos3() {
     Math.random2f(-1, 1) => float x;
@@ -286,10 +248,26 @@ fun vec3 randomPos3() {
     return @(x, y, 0.);
 }
 
+
+
+GText measureText() --> GG.scene();
+measureText.text("");
+measureText.pos(1., 1., 0);
+measureText.sca(0.1);
+GText beatText() --> GG.scene();
+beatText.text("");
+beatText.pos(1., 0.9, 0);
+beatText.sca(0.1);
+
+spork ~ clock(); // Do this after creating the UI that clock may update (measureText, beatText)
+
 // TODO: consider a small UI layer to expose these sorts of things, for debugging.
-// so I can control the next planet(s)
+// so I can control the next planet(s)spork ~ clock();
 false => int isPercussion;
 0 => int instrumentVariant;
+
+// Start position and orbit circle
+GGen galaxy --> GG.scene();
 
 GGen solarSystemNotes --> galaxy;
 solarSystemNotes.pos(1.,0.,0.);

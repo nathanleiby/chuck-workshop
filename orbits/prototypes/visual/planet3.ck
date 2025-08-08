@@ -2,7 +2,6 @@
 
 SphereGeometry sphere_geo;
 FlatMaterial mat3;
-
 mat3.color(Color.BLUE);
 GMesh sphere(sphere_geo, mat3) @=> GMesh planet;
 0.2 => float planet_radius;
