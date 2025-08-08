@@ -6,8 +6,16 @@
   - [x] try another song / form
 
 - [ ] make prettier sounds - samples, etc (2h)
-  - [ ] Consider making each "tone" planet play at a random octave, for less collision among sync'd sounds
-
+  - [x] try a few better constructed synths?
+    - [ ] stacked synths
+    - [ ] reverb
+    - [ ] delay
+    - rhodey is working well!
+  - [ ] adjust sound duration
+  - [x] Consider making each "tone" planet play at a random octave, for less collision among sync'd sounds - tried it. the effect isn't as nice as hoped.
+- [ ] removing planets / sounds could help a lot for composition aspect.
+- [ ] global filter going up and down
+- [ ] change zoom level
 
 AESTHETIC
 

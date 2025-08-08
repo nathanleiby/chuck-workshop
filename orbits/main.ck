@@ -75,7 +75,7 @@ class Planet extends GGen
             @(orbit_radius * Math.cos(theta), orbit_radius * Math.sin(theta), 0) => tick.pos;
         }
 
-        Math.random2(0,1) => int variant;
+        Math.random2(0,8) => int variant;
         spork ~ poly(beat_count, measure, variant, e, isPercussion);
         spork ~ listenForEvent(e);
     }
@@ -196,11 +196,11 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
         "sound_on" => e.name;
         e.signal();
         if (isPercussion) {
-            if (variant % 2 == 0) {
-                spork ~ sm.playSample("kick.wav");
-            } else {
-                spork ~ sm.playSample("snare.wav");
-            }
+            variant % 4 => int variation;
+            if (variation == 0) spork ~ sm.playSample("kick.wav");
+            if (variation == 1) spork ~ sm.playSample("snare.wav");
+            if (variation == 2) spork ~ sm.playSample("hihat-open.wav");
+            if (variation == 3) spork ~ sm.playSample("snare-hop.wav");
         } else {
             // various chords available
             [
@@ -238,8 +238,8 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
                 <<< "ERROR -- need a chord for each root note in the song ... expected songLength = ", songLength >>>;
                 me.exit();
             }
-            getClockMeasureI() % 4 => int songIdx;
-
+            0.25 => float songRate;
+            ((getClockMeasure() * songRate) $ int) % 4 => int songIdx;
 
 
 
@@ -248,12 +248,16 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
 
             rootNotes[songIdx] => int rootMidiNote; // current root
             // Allow adjusting octave based on planet variant
-            rootMidiNote - 12 + (variant * 12) => rootMidiNote;
+            rootMidiNote - 12 + ((variant % 2) * 12) => rootMidiNote;
 
             chordTypes[songIdx] => int chordIdx; // current chord
 
             chords[chordIdx] @=> int chordOffsets[];
+
             Math.random2(0, chordOffsets.size() - 1) => int notesIdx; // random note within the chord
+            // variant % chordOffsets.size() => int notesIdx; // consistent note within the chord
+            // Keep it the same one for the planet
+
             // TODO(temp): always play the root
             // 0 => notesIdx;
             rootMidiNote + chordOffsets[notesIdx] => int midiNote; // specific midiNote, accounting for root
