@@ -18,6 +18,13 @@
 - [x] change zoom level
   - [x] explored
   - [ ] figured out final zoom
+- [ ] add one more instrument
+  - [ ] add background pad
+- [ ] ..
+- [ ] add solar flare
+- [ ] camera storyteller (press - or +)
+  - [ ] change targets?
+    - [ ] add a set of prerecorded targets
 - [ ] add/removing planets / sounds could help a lot for composition aspect.
 - [ ] global filter going up and down
 

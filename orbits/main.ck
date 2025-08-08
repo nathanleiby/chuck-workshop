@@ -228,17 +228,18 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
 
             // SONG
             // SONG #1:
-            [42, 44, 46, 47] @=> int rootNotes[];
-            [0,2,2,0] @=> int chordTypes[];
-            4 => Globals.songLength;
+            // [42, 44, 46, 47] @=> int rootNotes[];
+            // [0,2,2,0] @=> int chordTypes[];
+            // 4 => Globals.songLength;
 
             // SONG #2: @0:00 https://chordify.net/chords/plini-songs/selenium-forest-chords
             // Right now transitions are at the measure level, but the real song is transitioning at the "beat" level
             // TODO: consider 1/2time or double time interpretations
             // Consider also BPM
-            // [51, 51, 47, 47, 44, 46, 46, 46] @=> int rootNotes[];
-            // [2,  2,  0,  0,  2,  2,  2,  2] @=> int chordTypes[];
-            // 8 => int songLength;
+            [51, 51, 47, 47, 44, 46, 46, 46] @=> int rootNotes[];
+            [2,  2,  0,  0,  2,  2,  2,  2] @=> int chordTypes[];
+            8 => Globals.songLength;
+            0.125 => Globals.songRate;
 
             // SONG #3: @2:58 https://chordify.net/chords/plini-songs/selenium-forest-chords
             // - guitar riff in the actual song is 7 against 2 polyrhythm
@@ -247,7 +248,7 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
             // B, Db, B,  Abm
             // [35, 37, 35, 44] @=> int rootNotes[];
             // [0,  1,  0,  2] @=> int chordTypes[];
-            // 4 => int songLength;
+            // 4 => Globals.songLength;
 
             // SONG #4: @3:10 https://chordify.net/chords/plini-songs/selenium-forest-chords
 
@@ -434,6 +435,32 @@ output_pass.tonemap(4); // 4 is "ACES"
 // Only ultra bright objects get blooom
 bloom_pass.threshold(1.1);
 
+
+solarSystemNotes @=> GGen target;
+true => int isRotationLocked;
+0 => int currentTargetIdx;
+0 => int currentZoomIdx;
+
+[solarSystemNotes, solarSystemPercussion, galaxy] @=> GGen targets[];
+[1., 2.5, 4., 7.5, 10., 15., 20.] @=> float targetZooms[];
+
+fun updateTarget() {
+    (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
+    if (currentTargetIdx == 1) {
+        true => isPercussion;
+    }
+
+    // TODO: set current zoomIdx to 0 too?
+    0 => currentZoomIdx;
+}
+
+fun updateZoom() {
+    // future: Fly camera?
+    (currentZoomIdx+ 1) % targetZooms.size() => currentZoomIdx;
+
+    // !(currentTargetIdx == 2) => isRotationLocked;
+}
+
 while (true) {
     GG.nextFrame() => now;
 
@@ -451,7 +478,7 @@ while (true) {
 
     // Camera storyteller
     // // 0.01 => float zoomOutRate;
-    solarSystemNotes @=> GGen target;
+
     // 0.02 => float zoomOutRate;
     // if (getClockMeasure() > 4) 0.1 => zoomOutRate;
     // if (getClockMeasure() > 8) 0.2 => zoomOutRate;
@@ -461,14 +488,54 @@ while (true) {
 
     // cam.posZ(cam.posZ() + zoomOutRate * GG.dt());
     // cam.lookAt(target.pos());c
+    // move outward and rotate in polar coords
+
+    // allow changing targets
+    if (GWindow.keyDown(GWindow.Key_T)) {
+        // update target
+        updateTarget();
+        // (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
+        // // TODO: set current zoomIdx to 0 too?
+        // 0 => currentZoomIdx;
+        // targets[currentTargetIdx] @=> target;
+    }
+
+    if (GWindow.keyDown(GWindow.Key_Z)){
+        // future: Fly camera?
+        (currentZoomIdx+ 1) % targetZooms.size() => currentZoomIdx;
+
+    }
+
+    if (GWindow.keyDown(GWindow.Key_R)){
+        !isRotationLocked => isRotationLocked;
+    }
+
+    targets[currentTargetIdx] @=> target;
+    cam.posZ(targetZooms[currentZoomIdx]);
+
 
     // follow 1 system
     target.posWorld() => vec3 gPos;
     cam.posX(gPos.x);
     cam.posY(gPos.y);
-    // cam.posY(target.globalPosY);
+    if (isRotationLocked) {
+        cam.rot(galaxy.rot());
+    } else {
+        cam.rot(@(0,0,0));
+    }
 
+    if (GWindow.keyDown(GWindow.Key_S)) {
+        cam.pos(@(0,0,0));
 
-    // move outward and rotate in polar coords
+        GG.nextFrame() => now;
+        while (true) {
+        }
+    }
 }
 
+// // Toggle between two modes.. following or flying
+// fun Cameraperson() {
+//     while (true) {
+
+//     }
+// }
