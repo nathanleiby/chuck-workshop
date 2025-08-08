@@ -7,15 +7,25 @@ class PlanetEvent extends Event
     string name;
 }
 
-class Planet extends GSphere
+class Planet extends GGen
 {
-    Math.random2f(0.05, 0.15) => float planet_radius;
-    Color.GREEN => vec3 planet_color;
+
+    SphereGeometry sphere_geo;
     FlatMaterial mat3;
+
+    Color.GREEN => vec3 planet_color;
     mat3.color(planet_color);
-    this.mat(mat3);
+    GMesh sphere(sphere_geo, mat3);
+    sphere --> this;
+    0.2 => float planet_radius;
+    sphere.sca(planet_radius);
+
+    // Math.random2f(0.05, 0.15) => float planet_radius;
+    // FlatMaterial mat3;
+    // mat3.color(planet_color);
+    // this.mat(mat3);
     Math.random2f(0.4, 1.5) => float orbit_radius;
-    this.sca(planet_radius);
+    // this.sca(planet_radius);
 
     // position within the orbit (init theta to control starting position)
     0. => float theta;
@@ -91,10 +101,10 @@ class Planet extends GSphere
             // <<< "Planet event received: ", event.name, " at time: ", now >>>;
             if (event.name == "sound_on") {
                 this.sca(planet_radius * 1.5);
-                this.color(planet_color * 2.);
+                mat3.color(planet_color * 2.);
             } else if (event.name == "sound_off") {
                 this.sca(planet_radius * 1.);
-                this.color(planet_color);
+                mat3.color(planet_color);
             }
         }
     }

@@ -5,7 +5,7 @@
   - [x] add a sun to each solar system
   - [x] sun niceness (bloom, 2 sun colors)
   - [x] hide debug UI (measureText)
-  - [..] convert to flat materials
+  - [x] convert to flat materials
   - [ ] tune planet sizes and colors
 - [ ] add a global clock with chords/colors, so there's a sense of song / movement (1h)
 - [ ] make prettier sounds - samples, etc (2h)
