@@ -24,7 +24,7 @@ class Planet extends GGen
     // FlatMaterial mat3;
     // mat3.color(planet_color);
     // this.mat(mat3);
-    Math.random2f(0.4, 1.5) => float orbit_radius;
+    Math.random2f(0.7, 1.5) => float orbit_radius;
     // this.sca(planet_radius);
 
     // position within the orbit (init theta to control starting position)
@@ -46,7 +46,8 @@ class Planet extends GGen
         now => startTime;
 
         // https://chuck.stanford.edu/chugl/api/chugl-basic.html#Color .. Convert RGB to 0->1
-        [0x4B0082, 0x4682B4, 0xFF6EC7, 0x000000, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
+        // [0x4B0082, 0x4682B4, 0xFF6EC7, 0x000000, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
+        [0x4B0082, 0x4682B4, 0xFF6EC7, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
         Math.random2(0, colorPalette.size()-1) => int colorIndex;
         Color.hex(colorPalette[colorIndex]) => planet_color;
         mat3.color(planet_color);
@@ -195,7 +196,7 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
         "sound_on" => e.name;
         e.signal();
         if (isPercussion) {
-            if (variant == 0) {
+            if (variant % 2 == 0) {
                 spork ~ sm.playSample("kick.wav");
             } else {
                 spork ~ sm.playSample("snare.wav");
@@ -209,10 +210,31 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
             ] @=> int chords[][];
 
             // SONG
+            // SONG #1:
             [42, 44, 46, 47] @=> int rootNotes[];
             [0,2,2,0] @=> int chordTypes[];
             4 => int songLength;
-            if (rootNotes.size() != chordTypes.size() != songLength) {
+
+            // SONG #2: @0:00 https://chordify.net/chords/plini-songs/selenium-forest-chords
+            // Right now transitions are at the measure level, but the real song is transitioning at the "beat" level
+            // TODO: consider 1/2time or double time interpretations
+            // Consider also BPM
+            // [51, 51, 47, 47, 44, 46, 46, 46] @=> int rootNotes[];
+            // [2,  2,  0,  0,  2,  2,  2,  2] @=> int chordTypes[];
+            // 8 => int songLength;
+
+            // SONG #3: @2:58 https://chordify.net/chords/plini-songs/selenium-forest-chords
+            // - guitar riff in the actual song is 7 against 2 polyrhythm
+            // TODO: consider 1/2time or double time interpretations
+            // TODO: can always offset by +12 too
+            // B, Db, B,  Abm
+            // [35, 37, 35, 44] @=> int rootNotes[];
+            // [0,  1,  0,  2] @=> int chordTypes[];
+            // 4 => int songLength;
+
+            // SONG #4: @3:10 https://chordify.net/chords/plini-songs/selenium-forest-chords
+
+            if (rootNotes.size() != songLength || chordTypes.size() != songLength) {
                 <<< "ERROR -- need a chord for each root note in the song ... expected songLength = ", songLength >>>;
                 me.exit();
             }
@@ -223,13 +245,17 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
 
 
 
-            // TODO: Randomly adjust octave for each planet -- keep consistent for a planet
 
             rootNotes[songIdx] => int rootMidiNote; // current root
+            // Allow adjusting octave based on planet variant
+            rootMidiNote - 12 + (variant * 12) => rootMidiNote;
+
             chordTypes[songIdx] => int chordIdx; // current chord
 
             chords[chordIdx] @=> int chordOffsets[];
             Math.random2(0, chordOffsets.size() - 1) => int notesIdx; // random note within the chord
+            // TODO(temp): always play the root
+            // 0 => notesIdx;
             rootMidiNote + chordOffsets[notesIdx] => int midiNote; // specific midiNote, accounting for root
 
             spork ~ sm.playNote(step, midiNote);
