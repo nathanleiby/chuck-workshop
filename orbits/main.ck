@@ -293,8 +293,21 @@ false => int isPercussion;
 
 GGen solarSystemNotes --> galaxy;
 solarSystemNotes.pos(1.,0.,0.);
+
+SphereGeometry sphere_geo;
+FlatMaterial mat3;
+mat3.color(2. * Color.YELLOW);
+GMesh sun1(sphere_geo, mat3);
+sun1 --> solarSystemNotes;
+sun1.sca(0.7);
+
 GGen solarSystemPercussion --> galaxy;
 solarSystemPercussion.pos(-1.,0.,0.);
+FlatMaterial sun2mat;
+sun2mat.color(3.0 * Color.RED);
+GMesh sun2(sphere_geo, sun2mat);
+sun2 --> solarSystemPercussion;
+sun2.sca(0.9);
 
 fun handleUserInput() {
     // TODO: Allow creating Solar Systems
@@ -328,8 +341,25 @@ fun handleUserInput() {
     }
 }
 
+
+
+// render graph
+GG.outputPass() @=> OutputPass output_pass;
+GG.renderPass() --> BloomPass bloom_pass --> output_pass;
+bloom_pass.input(GG.renderPass().colorOutput());
+output_pass.input(bloom_pass.colorOutput());
+output_pass.tonemap(4); // 4 is "ACES"
+
+// Only ultra bright objects get blooom
+bloom_pass.threshold(1.1);
+
 while (true) {
     GG.nextFrame() => now;
+
+    // Pulsing suns
+    Math.sin(Math.PI + 2*Math.PI * getClockMeasureProgress()) => float bloom_pulse;
+    0.9 - (bloom_pulse / 2.) => float bloom_intensity;
+    bloom_pass.intensity(bloom_intensity);
 
     handleUserInput();
 }
