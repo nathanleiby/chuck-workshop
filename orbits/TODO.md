@@ -13,10 +13,13 @@
     - rhodey is working well!
   - [ ] adjust sound duration
   - [x] Consider making each "tone" planet play at a random octave, for less collision among sync'd sounds - tried it. the effect isn't as nice as hoped.
+- [x] visually spacing orbits better would help
+- [ ] spinning cosmos to explain global "song"
+- [x] change zoom level
+  - [x] explored
+  - [ ] figured out final zoom
 - [ ] add/removing planets / sounds could help a lot for composition aspect.
-- [ ] visually spacing orbits better would help
 - [ ] global filter going up and down
-- [ ] change zoom level
 
 AESTHETIC
 

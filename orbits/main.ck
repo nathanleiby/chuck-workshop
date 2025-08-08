@@ -11,7 +11,11 @@ GG.windowTitle( "Orbits" );
 GCamera cam --> GG.scene();
 GG.scene().camera(cam);
 
-class SolarSystem extends GPlane
+class Galaxy extends GPlane {
+
+}
+
+class SolarSystem extends GGen
 {
     fun @construct() {
 
@@ -37,23 +41,15 @@ class Planet extends GGen
     0.2 => float planet_radius;
     sphere.sca(planet_radius);
 
-    // Math.random2f(0.05, 0.15) => float planet_radius;
-    // FlatMaterial mat3;
-    // mat3.color(planet_color);
-    // this.mat(mat3);
-    // Math.random2f(0.7, 1.5) => float orbit_radius;
     0. => float orbit_radius;
-    // this.sca(planet_radius);
 
     // position within the orbit (init theta to control starting position)
     0. => float theta;
 
-    // 0.6::second => dur BEAT_DUR; // 100 BPM
     Globals.BEAT_DUR => dur BEAT_DUR;
     7 => float BEAT_COUNT;
 
-    4 * BEAT_DUR => dur measure;
-    measure => dur period; // "year"?
+    Globals.measure => dur period; // "year"?
 
     PlanetEvent e;
     time startTime;
@@ -63,13 +59,14 @@ class Planet extends GGen
     {
         now => startTime;
 
-        0.6 + beat_count * 0.2 => orbit_radius;
+        0.6 + beat_count * planet_radius * 2. => orbit_radius;
 
         // https://chuck.stanford.edu/chugl/api/chugl-basic.html#Color .. Convert RGB to 0->1
         // [0x4B0082, 0x4682B4, 0xFF6EC7, 0x000000, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
         [0x4B0082, 0x4682B4, 0xFF6EC7, 0xFFD700, 0x00FF00, 0x808080] @=> int colorPalette[];
-        Math.random2(0, colorPalette.size()-1) => int colorIndex;
-        Color.hex(colorPalette[colorIndex]) => planet_color;
+        // Math.random2(0, colorPalette.size()-1) => int colorIndex;
+        beat_count % colorPalette.size() => int colorIndex;
+        0.6 * Color.hex(colorPalette[colorIndex]) => planet_color;
         mat3.color(planet_color);
         this --> parent;
 
@@ -96,7 +93,7 @@ class Planet extends GGen
         }
 
         Math.random2(0,8) => int variant;
-        spork ~ poly(beat_count, measure, variant, e, isPercussion);
+        spork ~ poly(beat_count, Globals.measure, variant, e, isPercussion);
         spork ~ listenForEvent(e);
     }
 
@@ -122,10 +119,10 @@ class Planet extends GGen
             // print
             // <<< "Planet event received: ", event.name, " at time: ", now >>>;
             if (event.name == "sound_on") {
-                this.sca(planet_radius * 1.5);
+                sphere.sca(planet_radius * 1.5);
                 mat3.color(planet_color * 2.);
             } else if (event.name == "sound_off") {
-                this.sca(planet_radius * 1.);
+                sphere.sca(planet_radius * 1.);
                 mat3.color(planet_color);
             }
         }
@@ -233,7 +230,7 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
             // SONG #1:
             [42, 44, 46, 47] @=> int rootNotes[];
             [0,2,2,0] @=> int chordTypes[];
-            4 => int songLength;
+            4 => Globals.songLength;
 
             // SONG #2: @0:00 https://chordify.net/chords/plini-songs/selenium-forest-chords
             // Right now transitions are at the measure level, but the real song is transitioning at the "beat" level
@@ -254,17 +251,11 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
 
             // SONG #4: @3:10 https://chordify.net/chords/plini-songs/selenium-forest-chords
 
-            if (rootNotes.size() != songLength || chordTypes.size() != songLength) {
-                <<< "ERROR -- need a chord for each root note in the song ... expected songLength = ", songLength >>>;
+            if (rootNotes.size() != Globals.songLength || chordTypes.size() != Globals.songLength) {
+                <<< "ERROR -- need a chord for each root note in the song ... expected songLength = ", Globals.songLength >>>;
                 me.exit();
             }
-            0.25 => float songRate;
-            ((getClockMeasure() * songRate) $ int) % 4 => int songIdx;
-
-
-
-
-
+            getSongIdx() => int songIdx;
 
             rootNotes[songIdx] => int rootMidiNote; // current root
             // Allow adjusting octave based on planet variant
@@ -291,9 +282,18 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
     }
 }
 
+fun float getSongProgress() {
+    return getClockPos() * Globals.songRate / (Globals.songLength $ float);
+}
+
+fun int getSongIdx() {
+    return ((getClockMeasure() * Globals.songRate) $ int) % Globals.songLength;
+}
+
 fun float getClockPos() {
+    // TODO: beats per measure-- centralize this
     4 * Globals.BEAT_DUR => dur measure;
-    measure => dur period; // "year"?
+    // measure => dur period; // "year"?
     return now / measure;
 }
 
@@ -301,12 +301,6 @@ fun float getClockMeasure() {
     getClockPos() => float pos;
     return Math.floor(pos);
 }
-
-fun int getClockMeasureI() {
-    getClockPos() => float pos;
-    return Math.floor(pos) $ int;
-}
-
 
 fun float getClockMeasureProgress() {
     // returns [0,1] value of progress through the current "measure" (perhaps "loop" is better name)
@@ -387,7 +381,13 @@ sun2 --> solarSystemPercussion;
 sun2.sca(0.9);
 
 // cam.pos(solarSystemNotes.posX(), solarSystemNotes.posY(), 0. );
+
+// CAMERA VARIANTS
+// Galaxy view
 cam.pos(0, 0, 20.);
+
+// start looking at solar system one
+cam.pos(solarSystemNotes.pos() + @(0., 0., 10.));
 
 
 fun handleUserInput() {
@@ -442,11 +442,16 @@ while (true) {
     0.9 - (bloom_pulse / 2.) => float bloom_intensity;
     bloom_pass.intensity(bloom_intensity);
 
+    // Galactic rotation
+    getSongProgress() * 2. * Math.PI => float rotationProgress;
+    // galaxy.rotateZ(Math.PI * 0.01 * GG.dt());
+    galaxy.rot(@(0, 0, rotationProgress));
+
     handleUserInput();
 
     // Camera storyteller
     // // 0.01 => float zoomOutRate;
-    // solarSystemNotes @=> GGen target;
+    solarSystemNotes @=> GGen target;
     // 0.02 => float zoomOutRate;
     // if (getClockMeasure() > 4) 0.1 => zoomOutRate;
     // if (getClockMeasure() > 8) 0.2 => zoomOutRate;
@@ -455,7 +460,14 @@ while (true) {
     // }
 
     // cam.posZ(cam.posZ() + zoomOutRate * GG.dt());
-    // cam.lookAt(target.pos());
+    // cam.lookAt(target.pos());c
+
+    // follow 1 system
+    target.posWorld() => vec3 gPos;
+    cam.posX(gPos.x);
+    cam.posY(gPos.y);
+    // cam.posY(target.globalPosY);
+
 
     // move outward and rotate in polar coords
 }
