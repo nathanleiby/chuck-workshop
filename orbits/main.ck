@@ -444,7 +444,7 @@ true => int isRotationLocked;
 [solarSystemNotes, solarSystemPercussion, galaxy] @=> GGen targets[];
 [1., 2.5, 4., 7.5, 10., 15., 20.] @=> float targetZooms[];
 
-fun updateTarget() {
+fun nextTarget() {
     (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
     currentTargetIdx == 1 => isPercussion; // TODO: make targets work generally
 
@@ -455,8 +455,8 @@ fun updateTarget() {
 fun updateZoom() {
     // future: Fly camera?
     (currentZoomIdx+ 1) % targetZooms.size() => currentZoomIdx;
-
     // !(currentTargetIdx == 2) => isRotationLocked;
+
 }
 
 while (true) {
@@ -490,8 +490,7 @@ while (true) {
 
     // allow changing targets
     if (GWindow.keyDown(GWindow.Key_T)) {
-        // update target
-        updateTarget();
+        nextTarget();
         // (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
         // // TODO: set current zoomIdx to 0 too?
         // 0 => currentZoomIdx;
@@ -501,8 +500,23 @@ while (true) {
     if (GWindow.keyDown(GWindow.Key_Z)){
         // future: Fly camera?
         (currentZoomIdx+ 1) % targetZooms.size() => currentZoomIdx;
-
     }
+
+    if (GWindow.keyDown(GWindow.Key_Left)) {
+        if (currentTargetIdx > 0 ) {
+            (currentTargetIdx - 1) % targets.size() => currentTargetIdx;
+            currentTargetIdx == 1 => isPercussion;
+        }
+    } else if (GWindow.keyDown(GWindow.Key_Right)) {
+        nextTarget();
+    }
+
+    if (GWindow.keyDown(GWindow.Key_Up)) {
+        Math.max(currentZoomIdx -1 , 0 ) => currentZoomIdx;
+    } else if (GWindow.keyDown(GWindow.Key_Down)) {
+        Math.min(currentZoomIdx + 1, targetZooms.size() - 1 ) => currentZoomIdx;
+    }
+
 
     if (GWindow.keyDown(GWindow.Key_R)){
         !isRotationLocked => isRotationLocked;
