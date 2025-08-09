@@ -5,8 +5,6 @@
 GG.windowTitle( "Orbits" );
 // fullscreen
 // GG.fullscreen();
-// position
-// GG.camera().posZ( 3 );
 
 GCamera cam --> GG.scene();
 GG.scene().camera(cam);
@@ -129,10 +127,6 @@ class Planet extends GGen
     }
 }
 
-
-
-
-
 // creating a custom GGen class for a 2D circle
 class Circle extends GGen
 {
@@ -153,8 +147,6 @@ class Circle extends GGen
     fun void init(float radius, float newPulse, vec3 myColor)
     {
         color( myColor );
-        // TODO: variable shadowing is confusing! I had a arg called pulse and it was shadowed by the class variable pulse
-        // pulse => pulse;
         newPulse => pulse;
 
         // incremental angle from 0 to 2pi in N-2 step, plus to steps to close the line loop
@@ -198,13 +190,12 @@ class Circle extends GGen
 // note that it can be "on" or "off" beat within that pulse type
 // TODO(nate): Make this controllable. Then decide if randomness is nicer
 fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
-    //
     period => dur T;
     T / n => dur division;
     division / 2 => dur step;
 
     // wait til the next step
-    // (step - now % step) => now;
+    // (step - now % step) => now; // TODO: This can be very nice to allow "offbeat" rhythms
     // wait til the next division
     (division - now % division) => now;
 
@@ -259,19 +250,11 @@ fun poly(int n, dur period, int variant, PlanetEvent e, int isPercussion) {
             getSongIdx() => int songIdx;
 
             rootNotes[songIdx] => int rootMidiNote; // current root
-            // Allow adjusting octave based on planet variant
-            rootMidiNote - 12 + ((variant % 2) * 12) => rootMidiNote;
+            rootMidiNote - 12 + ((variant % 2) * 12) => rootMidiNote; // sometimes change the root's octave
 
             chordTypes[songIdx] => int chordIdx; // current chord
-
             chords[chordIdx] @=> int chordOffsets[];
-
             Math.random2(0, chordOffsets.size() - 1) => int notesIdx; // random note within the chord
-            // variant % chordOffsets.size() => int notesIdx; // consistent note within the chord
-            // Keep it the same one for the planet
-
-            // TODO(temp): always play the root
-            // 0 => notesIdx;
             rootMidiNote + chordOffsets[notesIdx] => int midiNote; // specific midiNote, accounting for root
 
             spork ~ sm.playNote(step, midiNote);
@@ -381,8 +364,6 @@ GMesh sun2(sphere_geo, sun2mat);
 sun2 --> solarSystemPercussion;
 sun2.sca(0.9);
 
-// cam.pos(solarSystemNotes.posX(), solarSystemNotes.posY(), 0. );
-
 // CAMERA VARIANTS
 // Galaxy view
 cam.pos(0, 0, 20.);
@@ -446,17 +427,13 @@ true => int isRotationLocked;
 
 fun nextTarget() {
     (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
-    currentTargetIdx == 1 => isPercussion; // TODO: make targets work generally
+    currentTargetIdx == 1 => isPercussion;
 
-    // TODO: set current zoomIdx to 0 too?
     0 => currentZoomIdx;
 }
 
 fun updateZoom() {
-    // future: Fly camera?
     (currentZoomIdx+ 1) % targetZooms.size() => currentZoomIdx;
-    // !(currentTargetIdx == 2) => isRotationLocked;
-
 }
 
 while (true) {
@@ -491,10 +468,6 @@ while (true) {
     // allow changing targets
     if (GWindow.keyDown(GWindow.Key_T)) {
         nextTarget();
-        // (currentTargetIdx + 1) % targets.size() => currentTargetIdx;
-        // // TODO: set current zoomIdx to 0 too?
-        // 0 => currentZoomIdx;
-        // targets[currentTargetIdx] @=> target;
     }
 
     if (GWindow.keyDown(GWindow.Key_Z)){
@@ -516,7 +489,6 @@ while (true) {
     } else if (GWindow.keyDown(GWindow.Key_Down)) {
         Math.min(currentZoomIdx + 1, targetZooms.size() - 1 ) => currentZoomIdx;
     }
-
 
     if (GWindow.keyDown(GWindow.Key_R)){
         !isRotationLocked => isRotationLocked;
